@@ -1,0 +1,6 @@
+data/
+__pycache__/
+venvNeuralNetworkLibrary/
+build/
+*.spec
+*.pkl
