@@ -31,10 +31,10 @@ class Sigmoid(Activation):
 class Relu(Activation):
     def __init__(self):
         def relu(x):
-            return np.maximum(x, 0)
+            return np.maximum(0, x)
 
         def relu_prime(x):
-            return np.greater(x, 0).astype(int)
+            return np.where(x >= 0, 1, 0)
 
         super().__init__(relu, relu_prime)
 
@@ -64,3 +64,6 @@ class Softmax(Layer):
     def backward(self, output_gradient, learning_rate):
         n = np.size(self.output)
         return np.dot((np.identity(n) - self.output.T) * self.output, output_gradient)
+    
+    def __str__(self):
+        return self.__class__.__name__ + "()"

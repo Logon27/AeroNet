@@ -10,10 +10,10 @@ else:
 
 import matplotlib.pyplot as plt
 
-from dense import Dense
-from activations import Tanh
-from losses import mse, mse_prime
 from network import Network
+from dense import Dense
+from activations import *
+from losses import *
 
 X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
 Y = np.array([[0], [1], [1], [0]])
@@ -28,7 +28,7 @@ layers = [
 ]
 
 # Train The Network
-network = Network(layers, mse, mse_prime, X, Y, X, Y, epochs=2000, learning_rate=0.05)
+network = Network(layers, mse, mse_prime, X, Y, X, Y, epochs=1000, learning_rate=0.05, batch_size=1)
 network.train()
 
 # Decision Boundary 3D Plot

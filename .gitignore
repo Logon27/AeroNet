@@ -4,3 +4,4 @@ venvNeuralNetworkLibrary/
 build/
 *.spec
 *.pkl
+notes.txt
