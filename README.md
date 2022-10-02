@@ -70,8 +70,8 @@ This simple neural network library does provide support for Cupy to gain CUDA su
 
 ## TODO
 
-- Implement more loss functions
-- Validate Leaky Relu activation function
-- Implement Convolutional Layers
+- Implement More Loss Functions
+- Validate Leaky Relu Activation Function
+- Implement Convolutional Layer
 - Implement Flatten Layer
 - Implement Dropout Layer
