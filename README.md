@@ -70,6 +70,7 @@ This simple neural network library does provide support for Cupy to gain CUDA su
 
 ## TODO
 
+- Package And Host The Library
 - Implement More Loss Functions
 - Validate Leaky Relu Activation Function
 - Implement Convolutional Layer
