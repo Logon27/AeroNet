@@ -24,14 +24,14 @@ python mnist.py
 
 ## Supported Neural Layers
 ```python
-Dense(numInputNeurons, numOutputNeurons) # For Weight Manipulation
+Dense(numInputNeurons, numOutputNeurons) # For weight manipulation
 Softmax() # For output percentage predictions
 
 # Activation Functions
 Sigmoid()
 Tanh()
 Relu()
-LeakyRelu() # Leaky Relu Not Validated
+LeakyRelu() # Leaky Relu not validated
 ```
 ## Network Class Usage
 
