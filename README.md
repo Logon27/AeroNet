@@ -20,6 +20,10 @@ python xor.py
 python mnist.py
 ```
 
+```
+# Convolutional implementation for mnist
+python mnist_conv.py
+```
 ---
 
 ## Supported Neural Layers
@@ -73,6 +77,4 @@ This simple neural network library does provide support for Cupy to gain CUDA su
 - Package And Host The Library
 - Implement More Loss Functions
 - Validate Leaky Relu Activation Function
-- Implement Convolutional Layer
-- Implement Flatten Layer
 - Implement Dropout Layer
