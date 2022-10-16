@@ -7,51 +7,61 @@ from keras.datasets import mnist
 from keras.utils import np_utils
 import matplotlib.pyplot as plt
 
-# Network Library Imports
 from network import Network
 from dense import Dense
+from convolutional import Convolutional
+from reshape import Reshape
+from flatten import Flatten
 from activations import *
 from losses import *
 from fileio import *
 
 def preprocess_data(x, y, limit):
-    # Reshape and normalize input data
-    x = x.reshape(x.shape[0], 28 * 28, 1)
-    x = x.astype("longdouble") / 255
-    # Encode output which is a number in range [0,9] into a vector of size 10
+    # reshape and normalize input data
+    x = x.reshape(x.shape[0], 1, 28, 28)
+    x = x.astype("float32") / 255
+    # encode output which is a number in range [0,9] into a vector of size 10
     # e.g. number 3 will become [0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
     y = np_utils.to_categorical(y)
     y = y.reshape(y.shape[0], 10, 1)
     return x[:limit], y[:limit]
 
-# Load MNIST from server
+# load MNIST from server, limit to 100 images per class since we're not training on GPU
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
-# Load clean MNIST copy for image display.
+# Load MNIST copy for image display
 (x_train_image, y_train_image), (x_test_image, y_test_image) = mnist.load_data()
 
 x_train, y_train = preprocess_data(x_train, y_train, 60000)
 x_test, y_test = preprocess_data(x_test, y_test, 10000)
 
-# Convert to cupy arrays if CUDA is enabled
-if enableCuda:
-    x_train, y_train = (np.asarray(x_train), np.asarray(y_train))
-    x_test, y_test = (np.asarray(x_test), np.asarray(y_test))
+# Example layouts
+# http://yann.lecun.com/exdb/mnist/
 
-# Network layers
+# Neural Network Layers
 layers = [
-    Dense(28 * 28, 70),
+    Convolutional((1, 28, 28), 5, 2),
+    # Input Size = 28
+    # Kernel Size = 5
+    # Output Size = Input Size - Kernel Size + 1
+    # 28 - 5 + 1 = 24
     Sigmoid(),
-    Dense(70, 35),
+    Convolutional((2, 24, 24), 3, 2),
     Sigmoid(),
-    Dense(35, 10),
+    Convolutional((2, 22, 22), 3, 2),
+    Sigmoid(),
+    # Reshape((2, 20, 20), (2 * 20 * 20, 1)),  # This is an alternative to Flatten
+    Flatten((2, 20, 20)),
+    Dense(2 * 20 * 20, 40),
+    Sigmoid(),
+    Dense(40, 10),
     Softmax()
 ]
 
-# network = loadNetwork("mnistNetwork.pkl")
-network = Network(layers, mse, mse_prime, x_train, y_train, x_test, y_test, epochs=10, learning_rate=0.1, batch_size=1)
+#network = loadNetwork("mnist-network-conv.pkl")
+network = Network(layers, categorical_cross_entropy, categorical_cross_entropy_prime, x_train, y_train, x_test, y_test, epochs=5, learning_rate=0.05)
 network.train()
-# saveNetwork(network, "mnistNetwork.pkl")
+saveNetwork(network, "mnist-network-conv.pkl")
 
 # Visual Debug After Training
 rows = 5
