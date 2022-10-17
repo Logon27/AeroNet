@@ -44,7 +44,7 @@ LeakyRelu() # Leaky Relu not validated
 
 ```python
 
-# Network layers are initalized as list
+# Network layers are initalized as a list
 network_layers = [
     Dense(28 * 28, 70),
     Sigmoid(),
