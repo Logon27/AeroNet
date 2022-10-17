@@ -29,6 +29,7 @@ python mnist_conv.py
 ## Supported Neural Layers
 ```python
 Dense(numInputNeurons, numOutputNeurons) # For weight manipulation
+Convolutional((inputDepth, inputWidth, inputHeight), kernelSize, numKernels)
 Softmax() # For output percentage predictions
 
 # Activation Functions
