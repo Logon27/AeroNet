@@ -31,6 +31,8 @@ python mnist_conv.py
 Dense(numInputNeurons, numOutputNeurons) # For weight manipulation
 Convolutional((inputDepth, inputWidth, inputHeight), kernelSize, numKernels)
 Softmax() # For output percentage predictions
+Reshape() # Modifies the shape of the numpy arrays passed between layers
+Flatten() # Flattens a numpy array into a 2D matrix with a single column
 
 # Activation Functions
 Sigmoid()
