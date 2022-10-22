@@ -12,6 +12,7 @@ from dense import Dense
 from convolutional import Convolutional
 from reshape import Reshape
 from flatten import Flatten
+from dropout import Dropout
 from activations import *
 from losses import *
 from fileio import *
@@ -46,6 +47,7 @@ layers = [
     # Output Size = Input Size - Kernel Size + 1
     # 28 - 5 + 1 = 24
     Sigmoid(),
+    Dropout(0.25),
     Convolutional((2, 24, 24), 3, 2),
     Sigmoid(),
     Convolutional((2, 22, 22), 3, 2),
