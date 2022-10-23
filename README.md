@@ -21,8 +21,13 @@ python mnist.py
 ```
 
 ```
-# Convolutional implementation for mnist
+# Convolutional neural network implementation for mnist
 python mnist_conv.py
+```
+
+```
+# Fully convolutional network implementation for mnist
+python mnist_fcn.py
 ```
 ---
 
