@@ -49,6 +49,8 @@ LeakyRelu() # Leaky Relu not validated
 ## Network Class Usage
 
 ```python
+# Import all neural network classes.
+from nn import *
 
 # Network layers are initalized as a list
 network_layers = [
@@ -79,7 +81,7 @@ network = loadNetwork("mnistNetwork.pkl")
 
 ## CUDA Support
 
-This simple neural network library does provide support for Cupy to gain CUDA support (You must have CUDA Toolkit installed). This can be enabled by setting enableCuda in config.py to True. HOWEVER, enabling CUDA on smaller networks can actually DECREASE performance. Because copying data over to the GPU for calculation takes time. So unless you are training very large networks I would leave CUDA disabled.
+This library used to support CUDA. However, it has since been removed because it was too hard to maintain with more complex layer implementations.
 
 ## TODO
 

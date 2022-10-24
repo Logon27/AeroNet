@@ -1,21 +1,9 @@
-from config import *
-if enableCuda:
-    import cupy as np
-else:
-    import numpy as np
+import numpy as np
 from keras.datasets import mnist
 from keras.utils import np_utils
 import matplotlib.pyplot as plt
 
-from network import Network
-from dense import Dense
-from convolutional import Convolutional
-from reshape import Reshape
-from flatten import Flatten
-from dropout import Dropout
-from activations import *
-from losses import *
-from fileio import *
+from nn import *
 
 def preprocess_data(x, y, limit):
     # reshape and normalize input data
@@ -35,9 +23,6 @@ def preprocess_data(x, y, limit):
 
 x_train, y_train = preprocess_data(x_train, y_train, 60000)
 x_test, y_test = preprocess_data(x_test, y_test, 10000)
-
-# Example layouts
-# http://yann.lecun.com/exdb/mnist/
 
 # Neural Network Layers (Fully Convolutional Network)
 layers = [
@@ -63,10 +48,10 @@ layers = [
     Softmax()
 ]
 
-#network = loadNetwork("mnist-network-fcn.pkl")
+#network = loadNetwork("mnist_network_fcn.pkl")
 network = Network(layers, categorical_cross_entropy, categorical_cross_entropy_prime, x_train, y_train, x_test, y_test, epochs=5, learning_rate=0.05)
 network.train()
-saveNetwork(network, "mnist-network-fcn.pkl")
+saveNetwork(network, "mnist_network_fcn.pkl")
 
 # Visual Debug After Training
 rows = 5

@@ -1,11 +1,6 @@
-from config import *
-if enableCuda:
-    import cupy as np
-    from cupyx.scipy.special import log1p
-else:
-    import numpy as np
-    # Solves a niche error when the input to the log is zero.
-    from scipy.special import log1p
+import numpy as np
+# Solves a niche error when the input to the log is zero.
+from scipy.special import log1p
 
 def mse(y_true, y_pred):
     return np.mean(np.power(y_true - y_pred, 2))

@@ -1,8 +1,4 @@
-from config import *
-if enableCuda:
-    import cupy as np
-else:
-    import numpy as np
+import numpy as np
 import time
 
 class Network():
@@ -126,11 +122,6 @@ class Network():
     def printNetworkInfo(self):
 
         print("===== Network Information =====")
-        if enableCuda:
-            print("Cuda Enabled.\n")
-        else:
-            print("Cuda Disabled.\n")
-
         print("Network Architecture:")
         print("[")
         print(*self.layers, sep='\n')
