@@ -1,9 +1,5 @@
-from config import *
-if enableCuda:
-    import cupy as np
-else:
-    import numpy as np
-from layer import Layer
+import numpy as np
+from nn.interfaces.layer import Layer
 
 class Activation(Layer):
     def __init__(self, activation, activation_prime):

@@ -1,18 +1,10 @@
-from config import *
-if enableCuda:
-    import cupy as np
-else:
-    import numpy as np
+import numpy as np
 from keras.datasets import mnist
 from keras.utils import np_utils
 import matplotlib.pyplot as plt
 
 # Network Library Imports
-from network import Network
-from dense import Dense
-from activations import *
-from losses import *
-from fileio import *
+from nn import *
 
 def preprocess_data(x, y, limit):
     # Reshape and normalize input data
@@ -30,13 +22,8 @@ def preprocess_data(x, y, limit):
 # Load clean MNIST copy for image display.
 (x_train_image, y_train_image), (x_test_image, y_test_image) = mnist.load_data()
 
-x_train, y_train = preprocess_data(x_train, y_train, 60000)
+x_train, y_train = preprocess_data(x_train, y_train, 10000)
 x_test, y_test = preprocess_data(x_test, y_test, 10000)
-
-# Convert to cupy arrays if CUDA is enabled
-if enableCuda:
-    x_train, y_train = (np.asarray(x_train), np.asarray(y_train))
-    x_test, y_test = (np.asarray(x_test), np.asarray(y_test))
 
 # Network layers
 layers = [
@@ -48,10 +35,10 @@ layers = [
     Softmax()
 ]
 
-# network = loadNetwork("mnistNetwork.pkl")
+# network = loadNetwork("mnist_network.pkl")
 network = Network(layers, mse, mse_prime, x_train, y_train, x_test, y_test, epochs=10, learning_rate=0.1, batch_size=1)
 network.train()
-# saveNetwork(network, "mnistNetwork.pkl")
+saveNetwork(network, "mnist_network.pkl")
 
 # Visual Debug After Training
 rows = 5

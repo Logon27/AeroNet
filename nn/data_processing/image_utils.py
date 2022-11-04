@@ -1,10 +1,5 @@
-from config import *
-if enableCuda:
-    import cupy as np
-    from cupyx.scipy.ndimage import rotate, zoom, shift
-else:
-    import numpy as np
-    from scipy.ndimage import rotate, zoom, shift
+import numpy as np
+from scipy.ndimage import rotate, zoom, shift
 import random
 # For image debugging
 from PIL import Image as im

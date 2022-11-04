@@ -1,10 +1,6 @@
-from config import *
-if enableCuda:
-    import cupy as np
-else:
-    import numpy as np
-from layer import Layer
-from activation import Activation
+import numpy as np
+from nn.interfaces.layer import Layer
+from nn.interfaces.activation import Activation
 
 class Tanh(Activation):
     def __init__(self):
