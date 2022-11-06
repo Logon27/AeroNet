@@ -22,7 +22,7 @@ def preprocess_data(x, y, limit):
 # Load clean MNIST copy for image display.
 (x_train_image, y_train_image), (x_test_image, y_test_image) = mnist.load_data()
 
-x_train, y_train = preprocess_data(x_train, y_train, 10000)
+x_train, y_train = preprocess_data(x_train, y_train, 60000)
 x_test, y_test = preprocess_data(x_test, y_test, 10000)
 
 # Network layers

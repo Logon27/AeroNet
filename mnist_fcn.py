@@ -26,22 +26,18 @@ x_test, y_test = preprocess_data(x_test, y_test, 10000)
 
 # Neural Network Layers (Fully Convolutional Network)
 layers = [
-    Convolutional((1, 28, 28), 5, 5),
+    Convolutional((1, 28, 28), 5, 5, bias_mode='tied'),
     # Input Size = 28
     # Kernel Size = 5
     # Output Size = Input Size - Kernel Size + 1
     # 28 - 5 + 1 = 24
     Sigmoid(),
     Dropout(0.25),
-    Convolutional((5, 24, 24), 3, 5),
+    Convolutional((5, 24, 24), 3, 5, bias_mode='tied'),
     Sigmoid(),
-    Convolutional((5, 22, 22), 3, 5),
+    Convolutional((5, 22, 22), 3, 5, bias_mode='tied'),
     Sigmoid(),
-    Convolutional((5, 20, 20), 3, 5),
-    Sigmoid(),
-    Convolutional((5, 18, 18), 3, 5),
-    Sigmoid(),
-    Convolutional((5, 16, 16), 16, 10),
+    Convolutional((5, 20, 20), 20, 10, bias_mode='tied'),
     # The flatten is only necessary because the convolutional layer implementation uses 2d convolution functions.
     # So it can't backprop to 3d properly without a flatten layer.
     Flatten((10, 1, 1)),
