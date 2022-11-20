@@ -1,5 +1,5 @@
 import numpy as np
-from nn.interfaces.layer import Layer
+from nn.layers.layer import Layer
 
 class Dense(Layer):
     def __init__(self, input_size, output_size):
