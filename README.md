@@ -11,6 +11,11 @@ pip install -r requirements.txt
 ## Testing Out A Network
 
 Test your network against one of these datasets...
+```
+# move into the training examples directory
+cd training_examples
+# then execute one of the scripts below...
+```
 
 ```
 python xor.py
@@ -35,7 +40,6 @@ python mnist_fcn.py
 ```python
 Dense(numInputNeurons, numOutputNeurons) # For weight manipulation
 Convolutional((inputDepth, inputWidth, inputHeight), kernelSize, numKernels)
-Softmax() # For output percentage predictions
 Reshape() # Modifies the shape of the numpy arrays passed between layers
 Flatten() # Flattens a numpy array into a 2D matrix with a single column
 Dropout(probability) # Randomly drops layer outputs based on a probability to prevent overfitting
@@ -45,6 +49,7 @@ Sigmoid()
 Tanh()
 Relu()
 LeakyRelu() # Leaky Relu not validated
+Softmax() # For output percentage predictions
 ```
 ## Network Class Usage
 
@@ -72,10 +77,10 @@ network.train()
 prediction_array = network.predict(input_array)
 
 # Save the network to a file
-saveNetwork(network, "mnistNetwork.pkl")
+saveNetwork(network, "mnist_network.pkl")
 
 # Load the network from a file
-network = loadNetwork("mnistNetwork.pkl")
+network = loadNetwork("mnist_network.pkl")
 
 ```
 
@@ -89,3 +94,9 @@ This library used to support CUDA. However, it has since been removed because it
 - Implement More Loss Functions
 - Validate Leaky Relu Activation Function
 - Implement Max Pooling
+- Implement Avg Pooling
+- Implement Adaptive Avg Pooling
+- Implement Batch Normalization
+- Implement Swappable Optimizers
+- Separate the Model into its own class
+- Implement Layer Input Size Calculations

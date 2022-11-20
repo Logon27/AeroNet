@@ -1,6 +1,6 @@
 import numpy as np
 from scipy import signal
-from nn.interfaces.layer import Layer
+from nn.layers.layer import Layer
 
 class Convolutional(Layer):
     def __init__(self, input_shape, kernel_size, depth, bias_mode: str = 'untied'):

@@ -2,7 +2,11 @@
 from .network import Network
 
 # All Activation Functions
-from .layers.activations import Tanh, Sigmoid, Softmax, Relu, LeakyRelu
+from .activations.leaky_relu import LeakyRelu
+from .activations.relu import Relu
+from .activations.sigmoid import Sigmoid
+from .activations.softmax import Softmax
+from .activations.tanh import Tanh
 
 # All Standard Layers
 from .layers.dense import Dense
@@ -12,7 +16,12 @@ from .layers.flatten import Flatten
 from .layers.reshape import Reshape
 
 # Loss Functions
-from .losses import mse, mse_prime, binary_cross_entropy, binary_cross_entropy_prime, categorical_cross_entropy, categorical_cross_entropy_prime
+# Mean Squared Error
+from .losses.mse import mse, mse_prime
+# Binary Cross Entropy
+from .losses.bce import binary_cross_entropy, binary_cross_entropy_prime
+# Categorical Cross Entropy
+from .losses.cce import categorical_cross_entropy, categorical_cross_entropy_prime
 
 # Network File I/O
 from .data_processing.file_io import saveNetwork, loadNetwork

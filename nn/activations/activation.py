@@ -1,5 +1,5 @@
 import numpy as np
-from nn.interfaces.layer import Layer
+from nn.layers.layer import Layer
 
 class Activation(Layer):
     def __init__(self, activation, activation_prime):

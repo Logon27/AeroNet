@@ -1,54 +1,47 @@
+import sys
+sys.path.append('..')
+
 import numpy as np
 from keras.datasets import mnist
 from keras.utils import np_utils
 import matplotlib.pyplot as plt
 
+# Network Library Imports
 from nn import *
 
 def preprocess_data(x, y, limit):
-    # reshape and normalize input data
-    x = x.reshape(x.shape[0], 1, 28, 28)
-    x = x.astype("float32") / 255
-    # encode output which is a number in range [0,9] into a vector of size 10
+    # Reshape and normalize input data
+    x = x.reshape(x.shape[0], 28 * 28, 1)
+    x = x.astype("longdouble") / 255
+    # Encode output which is a number in range [0,9] into a vector of size 10
     # e.g. number 3 will become [0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
     y = np_utils.to_categorical(y)
     y = y.reshape(y.shape[0], 10, 1)
     return x[:limit], y[:limit]
 
-# load MNIST from server, limit to 100 images per class since we're not training on GPU
+# Load MNIST from server
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
-# Load MNIST copy for image display
+# Load clean MNIST copy for image display.
 (x_train_image, y_train_image), (x_test_image, y_test_image) = mnist.load_data()
 
 x_train, y_train = preprocess_data(x_train, y_train, 60000)
 x_test, y_test = preprocess_data(x_test, y_test, 10000)
 
-# Neural Network Layers
+# Network layers
 layers = [
-    Convolutional((1, 28, 28), 5, 2),
-    # Input Size = 28
-    # Kernel Size = 5
-    # Output Size = Input Size - Kernel Size + 1
-    # 28 - 5 + 1 = 24
+    Dense(28 * 28, 70),
     Sigmoid(),
-    Dropout(0.25),
-    Convolutional((2, 24, 24), 3, 2),
+    Dense(70, 35),
     Sigmoid(),
-    Convolutional((2, 22, 22), 3, 2),
-    Sigmoid(),
-    # Reshape((2, 20, 20), (2 * 20 * 20, 1)),  # This is an alternative to Flatten
-    Flatten((2, 20, 20)),
-    Dense(2 * 20 * 20, 40),
-    Sigmoid(),
-    Dense(40, 10),
+    Dense(35, 10),
     Softmax()
 ]
 
-#network = loadNetwork("mnist_network_conv.pkl")
-network = Network(layers, categorical_cross_entropy, categorical_cross_entropy_prime, x_train, y_train, x_test, y_test, epochs=5, learning_rate=0.05)
+# network = loadNetwork("mnist_network.pkl")
+network = Network(layers, mse, mse_prime, x_train, y_train, x_test, y_test, epochs=10, learning_rate=0.1, batch_size=1)
 network.train()
-saveNetwork(network, "mnist_network_conv.pkl")
+saveNetwork(network, "mnist_network.pkl")
 
 # Visual Debug After Training
 rows = 5
