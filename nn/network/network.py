@@ -1,23 +1,33 @@
 import numpy as np
 import time
+from nn.network.training_set import TrainingSet
+from nn.layers.layer_properties import LayerProperties
 
 class Network():
 
     # The total training time in minutes.
     totalTrainingTime = 0
 
-    def __init__(self, layers, loss, loss_prime, x_train, y_train, x_test, y_test, epochs = 1000, learning_rate = 0.01, batch_size = 1, verbose = True):
+    def __init__(self, layers, training_set: TrainingSet, loss, loss_prime, epochs = 1000, batch_size = 1, verbose = True, layer_properties: LayerProperties = None):
         self.layers = layers
+        self.training_set = training_set
         self.loss = loss
         self.loss_prime = loss_prime
-        self.x_train = x_train
-        self.y_train = y_train
-        self.x_test = x_test
-        self.y_test = y_test
         self.epochs = epochs
-        self.learning_rate = learning_rate
         self.batch_size = batch_size
         self.verbose = verbose
+
+        # Optionally set the layer properties for all layers that utilize layer properties parameters
+        if layer_properties is not None:
+            self.layer_properties = layer_properties
+            for layer in self.layers:
+                if hasattr(layer, 'layer_properties'):
+                    # Replace all layer defaults with any non "None" layer properties.
+                    # This is just a lot of fancy code to allow you to override only 'some' of the default layer properties.
+                    # Instead of forcing you to populate all the parameters every time.
+                    for attr, value in layer.layer_properties.__dict__.items():
+                        if getattr(layer_properties, attr) is not None:
+                            setattr(layer.layer_properties, attr, getattr(layer_properties, attr))
 
     def predict(self, input):
         output = input
@@ -38,7 +48,7 @@ class Network():
             #Minibatch Gradient Descent	    Consecutive subsets of the dataset	        n / size of minibatch
             #Stochastic Gradient Descent	Each sample of the dataset	                n
             #Increasing the batch size increases the number of epoches required for convergence
-            for batch in self.iterate_minibatches(self.x_train, self.y_train, self.batch_size, shuffle=True):
+            for batch in self.iterate_minibatches(self.training_set.x_train, self.training_set.y_train, self.batch_size, shuffle=True):
                 # Unpack batch training data
                 x_batch, y_batch = batch
                 # Track all gradients for the batch within a list
@@ -57,7 +67,7 @@ class Network():
 
                 # Backward Propagation
                 for layer in reversed(self.layers):
-                    gradient = layer.backward(gradient, self.learning_rate)
+                    gradient = layer.backward(gradient)
 
             if self.verbose:
                 accuracyTrain, accuracyTest = self.test()
@@ -81,7 +91,7 @@ class Network():
         # Training Accuracy
         numCorrect = 0
         numIncorrect = 0
-        for x, y in zip(self.x_train, self.y_train):
+        for x, y in zip(self.training_set.x_train, self.training_set.y_train):
             output = self.predict(x)
             if np.argmax(output) == np.argmax(y):
                 numCorrect += 1
@@ -92,7 +102,7 @@ class Network():
         # Test Accuracy
         numCorrect = 0
         numIncorrect = 0
-        for x, y in zip(self.x_test, self.y_test):
+        for x, y in zip(self.training_set.x_test, self.training_set.y_test):
             output = self.predict(x)
             if np.argmax(output) == np.argmax(y):
                 numCorrect += 1
@@ -127,11 +137,14 @@ class Network():
         print(*self.layers, sep='\n')
         print("]\n")
 
-        print("{:<15} {} {}".format("Training Data:", len(self.x_train), "samples"))
-        print("{:<15} {} {}".format("Test Data:", len(self.x_test), "samples"))
+        print("{:<15} {} {}".format("Training Data:", self.training_set.x_train_size, "samples"))
+        print("{:<15} {} {}".format("Test Data:", self.training_set.x_test_size, "samples"))
         print("{:<15} {}".format("Loss Function:", self.loss.__name__))
         print("{:<15} {}".format("Epochs:", str(self.epochs)))
-        print("{:<15} {}".format("Learning Rate:", str(self.learning_rate)))
+
+        if hasattr(self, 'layer_properties'):
+            print("{:<15} {}".format("Learning Rate:", str(self.layer_properties.learning_rate)))
+
         print("{:<15} {}".format("Batch Size:", str(self.batch_size)))
         print("{:<15} {}".format("Verbose:", self.verbose))
         print("\n===== End Network Information =====\n")

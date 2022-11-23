@@ -1,5 +1,5 @@
 numpy==1.22.0
-matplotlib==3.5.1
-tensorflow==2.7.0
-scipy==1.7.1
-dill==0.3.5.1
+matplotlib==3.6.2
+tensorflow==2.11.0
+scipy==1.9.3
+dill==0.3.6

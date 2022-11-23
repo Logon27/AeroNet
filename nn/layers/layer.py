@@ -7,6 +7,6 @@ class Layer:
         # TODO: return forward propagation output
         pass
 
-    def backward(self, output_gradient, learning_rate):
+    def backward(self, output_gradient):
         # TODO: update weights and return input gradient
         pass
