@@ -12,7 +12,7 @@ class Dropout(Layer):
         output = input * self.mask
         return output.reshape(input.shape)
 
-    def backward(self, output_gradient, learning_rate):
+    def backward(self, output_gradient):
         return output_gradient * self.mask
 
     #Helper for debug printing

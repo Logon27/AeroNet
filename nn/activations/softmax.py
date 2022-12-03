@@ -10,7 +10,7 @@ class Softmax(Layer):
         return self.output
     
     # Might need to re-evaluate this backprop after making the forward stable softmax
-    def backward(self, output_gradient, learning_rate):
+    def backward(self, output_gradient):
         n = np.size(self.output)
         return np.dot((np.identity(n) - self.output.T) * self.output, output_gradient)
     

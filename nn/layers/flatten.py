@@ -9,7 +9,7 @@ class Flatten(Layer):
         # Needs to be a single column 2d array not a 1d array.
         return np.reshape(input, (input.size, 1))
 
-    def backward(self, output_gradient, learning_rate):
+    def backward(self, output_gradient):
         return np.reshape(output_gradient, self.input_shape)
 
     # Helper for debug printing

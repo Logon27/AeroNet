@@ -49,7 +49,8 @@ layers = [
 ]
 
 #network = loadNetwork("mnist_network_conv.pkl")
-network = Network(layers, categorical_cross_entropy, categorical_cross_entropy_prime, x_train, y_train, x_test, y_test, epochs=5, learning_rate=0.05)
+network = Network(layers, TrainingSet(x_train, y_train, x_test, y_test), loss=categorical_cross_entropy, \
+    loss_prime=categorical_cross_entropy_prime, epochs=5)
 network.train()
 saveNetwork(network, "mnist_network_conv.pkl")
 

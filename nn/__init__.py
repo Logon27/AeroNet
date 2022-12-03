@@ -1,5 +1,7 @@
-# The base network
-from .network import Network
+# The Base Network
+from .network.network import Network
+# Training Set
+from .network.training_set import TrainingSet
 
 # All Activation Functions
 from .activations.leaky_relu import LeakyRelu
@@ -14,6 +16,16 @@ from .layers.convolutional import Convolutional
 from .layers.dropout import Dropout
 from .layers.flatten import Flatten
 from .layers.reshape import Reshape
+
+# Layer Properties
+from .layers.layer_properties import LayerProperties
+
+# Initializers
+from .initializers.normal import Normal
+from .initializers.uniform import Uniform
+
+# Optimizers
+from .optimizers.sgd import SGD
 
 # Loss Functions
 # Mean Squared Error

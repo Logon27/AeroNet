@@ -12,14 +12,15 @@ X = np.reshape(X, (4, 2, 1))
 Y = np.reshape(Y, (4, 1, 1))
 
 layers = [
-    Dense(2, 3),
+    Dense(2, 4),
     Tanh(),
-    Dense(3, 1),
+    Dense(4, 1),
     Tanh()
 ]
 
 #network = loadNetwork("xor_network.pkl")
-network = Network(layers, mse, mse_prime, X, Y, X, Y, epochs=1000, learning_rate=0.05, batch_size=1)
+network = Network(layers, TrainingSet(X, Y, X, Y), loss=mse, loss_prime=mse_prime, epochs=1000, batch_size=1, \
+    layer_properties=LayerProperties(learning_rate=0.03))
 # Train The Network
 network.train()
 saveNetwork(network, "xor_network.pkl")
