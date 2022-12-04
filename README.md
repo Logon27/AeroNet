@@ -55,7 +55,7 @@ network_layers = [
 ]
 
 # Create a network object
-network = Network(network_layers, TrainingSet(input_train, output_train, input_test, output_test), \
+network = Network(network_layers, TrainingSet(input_train, output_train, input_test, output_test, post_processing), \
     loss_function, loss_function_prime, epochs=10, batch_size=1)
 
 # Train the network
@@ -70,6 +70,21 @@ saveNetwork(network, "mnist_network.pkl")
 # Load the network from a file
 network = loadNetwork("mnist_network.pkl")
 ```
+
+## TrainingSet Explained
+
+The TrainingSet object is simply an object that stores your training and validation set data for your network. As well as a post processing function that is applied to your network predictions and training set data before comparisons are made.
+
+```python
+TrainingSet(input_train, output_train, input_test, output_test, post_processing)
+```
+
+input_train = training set inputs
+output_train = training set outputs
+input_test = test / valdation set inputs
+output_test = test / valdation set outputs
+
+post_processing is a function applied to your network prediction and training set data before they are compared. For example with the xor problem your network makes predictions based on floats. So you may want to round to the nearest float before comparing the prediction to the desired output. So you could pass np.rint to round to the nearest in. This allows you to get accurate test accuracy output during training. The same applies to things like mnist. You may have a softmax output with percentage predictions based on 10 indices (0 through 9). You may want your prediction to be the indice with the highest percentage. Therefore, you could pass the np.argmax function as the post processing function. Hopefully you can see why this is useful.
 
 ## Supported Neural Layers
 

@@ -93,7 +93,7 @@ class Network():
         numIncorrect = 0
         for x, y in zip(self.training_set.x_train, self.training_set.y_train):
             output = self.predict(x)
-            if np.argmax(output) == np.argmax(y):
+            if self.training_set.post_processing(output) == self.training_set.post_processing(y):
                 numCorrect += 1
             else:
                 numIncorrect += 1
@@ -104,7 +104,7 @@ class Network():
         numIncorrect = 0
         for x, y in zip(self.training_set.x_test, self.training_set.y_test):
             output = self.predict(x)
-            if np.argmax(output) == np.argmax(y):
+            if self.training_set.post_processing(output) == self.training_set.post_processing(y):
                 numCorrect += 1
             else:
                 numIncorrect += 1
