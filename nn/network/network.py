@@ -48,19 +48,19 @@ class Network():
             #Minibatch Gradient Descent	    Consecutive subsets of the dataset	        n / size of minibatch
             #Stochastic Gradient Descent	Each sample of the dataset	                n
             #Increasing the batch size increases the number of epoches required for convergence
-            for batch in self.iterate_minibatches(self.training_set.x_train, self.training_set.y_train, self.batch_size, shuffle=True):
+            for batch in self.iterate_minibatches(self.training_set.input_train, self.training_set.output_train, self.batch_size, shuffle=True):
                 # Unpack batch training data
-                x_batch, y_batch = batch
+                input_train_batch, output_train_batch = batch
                 # Track all gradients for the batch within a list
                 gradients = []
 
                 # Calculate the gradient for all training samples in the batch
-                for x, y in zip(x_batch, y_batch):
+                for input_train_sample, output_train_sample in zip(input_train_batch, output_train_batch):
                     # Forward Propagation
-                    output = self.predict(x)
+                    prediction = self.predict(input_train_sample)
 
                     # Calculate Gradient
-                    gradients.append(self.loss_prime(y, output))
+                    gradients.append(self.loss_prime(output_train_sample, prediction))
                     
                 # Average all the gradients calculated in the batch
                 gradient = np.mean(gradients, axis=0)
@@ -91,9 +91,9 @@ class Network():
         # Training Accuracy
         numCorrect = 0
         numIncorrect = 0
-        for x, y in zip(self.training_set.x_train, self.training_set.y_train):
-            output = self.predict(x)
-            if np.argmax(output) == np.argmax(y):
+        for input_train_sample, output_train_sample in zip(self.training_set.input_train, self.training_set.output_train):
+            prediction = self.predict(input_train_sample)
+            if self.training_set.post_processing(prediction) == self.training_set.post_processing(output_train_sample):
                 numCorrect += 1
             else:
                 numIncorrect += 1
@@ -102,9 +102,9 @@ class Network():
         # Test Accuracy
         numCorrect = 0
         numIncorrect = 0
-        for x, y in zip(self.training_set.x_test, self.training_set.y_test):
-            output = self.predict(x)
-            if np.argmax(output) == np.argmax(y):
+        for input_train_sample, output_train_sample in zip(self.training_set.input_test, self.training_set.output_test):
+            prediction = self.predict(input_train_sample)
+            if self.training_set.post_processing(prediction) == self.training_set.post_processing(output_train_sample):
                 numCorrect += 1
             else:
                 numIncorrect += 1
@@ -137,8 +137,8 @@ class Network():
         print(*self.layers, sep='\n')
         print("]\n")
 
-        print("{:<15} {} {}".format("Training Data:", self.training_set.x_train_size, "samples"))
-        print("{:<15} {} {}".format("Test Data:", self.training_set.x_test_size, "samples"))
+        print("{:<15} {} {}".format("Training Data:", self.training_set.input_train_size, "samples"))
+        print("{:<15} {} {}".format("Test Data:", self.training_set.input_test_size, "samples"))
         print("{:<15} {}".format("Loss Function:", self.loss.__name__))
         print("{:<15} {}".format("Epochs:", str(self.epochs)))
 
