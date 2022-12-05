@@ -84,7 +84,7 @@ output_train = training set outputs
 input_test = test / valdation set inputs
 output_test = test / valdation set outputs
 
-post_processing is a function applied to your network prediction and training set data before they are compared. For example with the xor problem your network makes predictions based on floats. So you may want to round to the nearest float before comparing the prediction to the desired output. So you could pass np.rint to round to the nearest in. This allows you to get accurate test accuracy output during training. The same applies to things like mnist. You may have a softmax output with percentage predictions based on 10 indices (0 through 9). You may want your prediction to be the indice with the highest percentage. Therefore, you could pass the np.argmax function as the post processing function. Hopefully you can see why this is useful.
+post_processing is a function applied to your network prediction and training set data before they are compared. For example with the xor problem your network makes predictions based on floats. So you may want to round to the nearest float before comparing the prediction to the desired output. So you could pass np.rint as the post processing function to round to the nearest int. This allows you to get accurate test accuracy output during training. The same applies to things like mnist. You may have a softmax output with percentage predictions based on 10 indices (0 through 9). You may want your prediction to be the indice with the highest percentage. Therefore, you could pass the np.argmax function as the post processing function. Hopefully you can see why this is useful.
 
 ## Supported Neural Layers
 
