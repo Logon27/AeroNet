@@ -1,4 +1,6 @@
-# Neural-Network-Library
+# AeroNet
+
+AeroNet is a simple neural network library. It is written entirely using python, numpy, and scipy. This is an educational neural network library made with the hope of demystifying some of these modern deep learning libraries. Many modern deep learning libraries do not fundamentally differ from AeroNet all that much. Most of the code in modern libraries is just dedicated to efficiency and optimization of the algorithms used. Feel free to play around with AeroNet and see what deep learning projects you can make.
 
 ## Creating A Virtual Environment
 
