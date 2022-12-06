@@ -3,6 +3,8 @@ import time
 from nn.network.training_set import TrainingSet
 from nn.layers.layer_properties import LayerProperties
 
+from copy import deepcopy
+
 class Network():
 
     # The total training time in minutes.
@@ -25,9 +27,11 @@ class Network():
                     # Replace all layer defaults with any non "None" layer properties.
                     # This is just a lot of fancy code to allow you to override only 'some' of the default layer properties.
                     # Instead of forcing you to populate all the parameters every time.
-                    for attr, value in layer.layer_properties.__dict__.items():
+                    for attr, _ in layer.layer_properties.__dict__.items():
                         if getattr(layer_properties, attr) is not None:
-                            setattr(layer.layer_properties, attr, getattr(layer_properties, attr))
+                            # copy is necessary to ensure that individual layer classes don't get shared instances of an optimizer
+                            # optimizers such as momentum sgd require separate instances to track velocity
+                            setattr(layer.layer_properties, attr, deepcopy(getattr(layer_properties, attr)))
 
     def predict(self, input):
         output = input
@@ -144,6 +148,7 @@ class Network():
 
         if hasattr(self, 'layer_properties'):
             print("{:<15} {}".format("Learning Rate:", str(self.layer_properties.learning_rate)))
+            print("{:<15} {}".format("Optimizer:", str(self.layer_properties._weight_optimizer.__class__.__name__)))
 
         print("{:<15} {}".format("Batch Size:", str(self.batch_size)))
         print("{:<15} {}".format("Verbose:", self.verbose))

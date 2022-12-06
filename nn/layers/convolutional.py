@@ -4,12 +4,25 @@ from nn.layers.layer import Layer
 from nn.layers.layer_properties import LayerProperties
 from nn.initializers import *
 from nn.optimizers import *
+from copy import deepcopy
 
 class Convolutional(Layer):
-    # Default layer properties
-    layer_properties = LayerProperties(learning_rate=0.05, weight_initializer=Uniform(), bias_initializer=Uniform(), optimizer=SGD())
 
     def __init__(self, input_shape, kernel_size, depth, bias_mode: str = 'untied', layer_properties: LayerProperties = None):
+        # Default layer properties
+        self.layer_properties = LayerProperties(learning_rate=0.05, weight_initializer=Uniform(), bias_initializer=Uniform(), optimizer=SGD())
+
+        # Optionally set the layer properties for all layers that utilize layer properties parameters
+        if layer_properties is not None:
+            # Replace all layer defaults with any non "None" layer properties.
+            # This is just a lot of fancy code to allow you to override only 'some' of the default layer properties.
+            # Instead of forcing you to populate all the parameters every time.
+            for attr, _ in layer_properties.__dict__.items():
+                if getattr(layer_properties, attr) is not None:
+                    # copy is necessary to ensure that individual layer classes don't get shared instances of an optimizer
+                    # optimizers such as momentum sgd require separate instances to track velocity
+                    setattr(self.layer_properties, attr, deepcopy(getattr(layer_properties, attr)))
+
         input_depth, input_height, input_width = input_shape
         self.depth = depth
         self.input_shape = input_shape
@@ -28,15 +41,6 @@ class Convolutional(Layer):
             self.biases = self.layer_properties.bias_initializer.get(*self.output_shape)
         elif bias_mode == 'tied':
             self.biases = self.layer_properties.bias_initializer.get(self.depth, 1, 1)
-        
-        # Optionally set the layer properties for all layers that utilize layer properties parameters
-        if layer_properties is not None:
-            # Replace all layer defaults with any non "None" layer properties.
-            # This is just a lot of fancy code to allow you to override only 'some' of the default layer properties.
-            # Instead of forcing you to populate all the parameters every time.
-            for attr, value in layer_properties.__dict__.items():
-                if getattr(layer_properties, attr) is not None:
-                    setattr(self.layer_properties, attr, getattr(layer_properties, attr))
 
     def forward(self, input):
         if self.bias_mode == 'untied':
@@ -69,8 +73,8 @@ class Convolutional(Layer):
                 kernels_gradient[i, j] = signal.correlate2d(self.input[j], output_gradient[i], "valid")
                 input_gradient[j] += signal.convolve2d(output_gradient[i], self.kernels[i, j], "full")
 
-        self.kernels += self.layer_properties.optimizer.calc(self.layer_properties.learning_rate, kernels_gradient)
-        self.biases += self.layer_properties.optimizer.calc(self.layer_properties.learning_rate, output_gradient)
+        self.kernels += self.layer_properties.weight_optimizer.calc(self.layer_properties.learning_rate, kernels_gradient)
+        self.biases += self.layer_properties.bias_optimizer.calc(self.layer_properties.learning_rate, output_gradient)
         return input_gradient
     
     def forward_tied(self, input):
@@ -89,9 +93,9 @@ class Convolutional(Layer):
             for j in range(self.input_depth):
                 kernels_gradient[i, j] = signal.correlate2d(self.input[j], output_gradient[i], "valid")
                 input_gradient[j] += signal.convolve2d(output_gradient[i], self.kernels[i, j], "full")
-        self.kernels += self.layer_properties.optimizer.calc(self.layer_properties.learning_rate, kernels_gradient)
+        self.kernels += self.layer_properties.weight_optimizer.calc(self.layer_properties.learning_rate, kernels_gradient)
         # Sum all the gradients for the output gradient of each kernel then multiply by the learning rate.
-        self.biases += self.layer_properties.optimizer.calc(self.layer_properties.learning_rate, np.apply_over_axes(np.sum, output_gradient, [1,2]))
+        self.biases += self.layer_properties.bias_optimizer.calc(self.layer_properties.learning_rate, np.apply_over_axes(np.sum, output_gradient, [1,2]))
         return input_gradient
 
     # Helper for debug printing

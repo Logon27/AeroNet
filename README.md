@@ -109,6 +109,7 @@ Softmax() # For output percentage predictions
 
 ```python
 SGD() # Stochastic Gradient Descent
+MomentumSGD() # Stochastic Gradient Descent with Momentum
 ```
 
 ## Supported Initializers
@@ -117,6 +118,7 @@ SGD() # Stochastic Gradient Descent
 Uniform() # Uniform between -1 and 1 only (at the moment)
 Normal(mean=0, std=1)
 Zero() # Zero initialized array for biases
+Xavier()
 ```
 
 ### Layer Properties

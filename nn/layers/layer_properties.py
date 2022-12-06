@@ -1,5 +1,6 @@
 from nn.initializers.initializer import Initializer
 from nn.optimizers.optimizer import Optimizer
+import copy
 
 class LayerProperties():
 
@@ -7,7 +8,10 @@ class LayerProperties():
         self._learning_rate = learning_rate
         self._weight_initializer = weight_initializer
         self._bias_initializer = bias_initializer
-        self._optimizer = optimizer
+        # Need independent optimizers because some optimizer require gradient shape.
+        # And the gradient can be different for the weights and biases independently.
+        self._weight_optimizer = copy.copy(optimizer)
+        self._bias_optimizer = copy.copy(optimizer)
     
     @property
     def learning_rate(self) -> int:
@@ -28,7 +32,11 @@ class LayerProperties():
         return self._bias_initializer
 
     @property
-    def optimizer(self) -> Optimizer:
-        return self._optimizer
+    def weight_optimizer(self) -> Optimizer:
+        return self._weight_optimizer
+    
+    @property
+    def bias_optimizer(self) -> Optimizer:
+        return self._bias_optimizer
     
     #Need to add setters for the initializer and optimizer and check for the class types

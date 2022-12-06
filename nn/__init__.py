@@ -23,9 +23,12 @@ from .layers.layer_properties import LayerProperties
 # Initializers
 from .initializers.normal import Normal
 from .initializers.uniform import Uniform
+from .initializers.zero import Zero
+from .initializers.xavier import Xavier
 
 # Optimizers
 from .optimizers.sgd import SGD
+from .optimizers.momentum_sgd import MomentumSGD
 
 # Loss Functions
 # Mean Squared Error
