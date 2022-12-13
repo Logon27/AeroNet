@@ -8,7 +8,7 @@ from copy import deepcopy
 
 class Convolutional(Layer):
 
-    def __init__(self, input_shape, kernel_size, depth, bias_mode: str = 'untied', layer_properties: LayerProperties = None):
+    def __init__(self, input_shape, kernel_size: int, depth: int, bias_mode: str = 'untied', layer_properties: LayerProperties = None):
         # Default layer properties
         self.layer_properties = LayerProperties(learning_rate=0.05, weight_initializer=Uniform(), bias_initializer=Uniform(), optimizer=SGD())
 
@@ -34,7 +34,7 @@ class Convolutional(Layer):
 
         valid_bias_modes = {'tied', 'untied'}
         if bias_mode not in valid_bias_modes:
-            raise ValueError("bias_modes must be one of {}, but got bias_mode='{}'".format(valid_bias_modes, bias_mode))
+            raise ValueError("bias_mode must be one of {}, but got bias_mode='{}'".format(valid_bias_modes, bias_mode))
         self.bias_mode = bias_mode
 
         if bias_mode == 'untied':
@@ -58,6 +58,7 @@ class Convolutional(Layer):
     # Untied bias: where you use use one bias per kernel and output
     # Tied bias: where you share one bias per kernel
     def forward_untied(self, input):
+        print(input.shape)
         self.input = input
         self.output = np.copy(self.biases)
         for i in range(self.depth):

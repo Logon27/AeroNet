@@ -16,6 +16,7 @@ from .layers.convolutional import Convolutional
 from .layers.dropout import Dropout
 from .layers.flatten import Flatten
 from .layers.reshape import Reshape
+from .layers.maxpooling2d import MaxPooling2D
 
 # Layer Properties
 from .layers.layer_properties import LayerProperties
