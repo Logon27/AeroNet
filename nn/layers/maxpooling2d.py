@@ -38,7 +38,9 @@ class MaxPooling2D(Layer):
         final_output = np.zeros(final_output_shape, dtype="float64")
 
         # I NEED TO CONVERT THIS INDEX MAP TO SOME KIND OF NUMPY ARRAY
-        self.index_map = [[[0]*final_output_shape[2]]*final_output_shape[1]]*input.shape[0]
+        #self.index_map = [[[-1]*final_output_shape[2]]*final_output_shape[1]]*input.shape[0]
+        self.index_map_x = np.zeros((input.shape[0], final_output_shape[1], final_output_shape[2]), dtype="int")
+        self.index_map_y = np.zeros((input.shape[0], final_output_shape[1], final_output_shape[2]), dtype="int")
 
         for depth in range(input.shape[0]):
 
@@ -77,12 +79,12 @@ class MaxPooling2D(Layer):
                     local_stride_index = np.unravel_index(np.argmax(strided_result[x][y], axis=None), strided_result[x][y].shape)
                     local_stride_index_x, local_stride_index_y = local_stride_index
 
-                    local_stride_index_x + (x * self.stride[0]), local_stride_index_y + (y * self.stride[1])
                     #input_index = local_stride_index + (np.array(x,y) * self.stride)
-                    input_index = (local_stride_index_x + (x * self.stride[0]), local_stride_index_y + (y * self.stride[1]))
+                    #input_index = (local_stride_index_x + (x * self.stride[0]), local_stride_index_y + (y * self.stride[1]))
                     # replace x,y index with the above input_in
                     # print("{}, {}, {}".format(depth, x, y))
-                    self.index_map[depth][x][y] = input_index
+                    self.index_map_x[depth][x][y] = local_stride_index_x + (x * self.stride[0])
+                    self.index_map_y[depth][x][y] = local_stride_index_y + (y * self.stride[1])
             final_output[depth] = out
 
         return final_output
@@ -93,7 +95,8 @@ class MaxPooling2D(Layer):
         for depth in range(output_gradient.shape[0]):
             for x in range(0, output_gradient.shape[1]):
                 for y in range(0, output_gradient.shape[2]):
-                    input_x_index, input_y_index = self.index_map[depth][x][y]
+                    input_x_index = self.index_map_x[depth][x][y]
+                    input_y_index = self.index_map_y[depth][x][y]
                     input_gradient[depth][input_x_index][input_y_index] += output_gradient[depth][x][y]
         # print(input_gradient)
         # Currently prints a lot of input gradients that just have a bunch of zeros
