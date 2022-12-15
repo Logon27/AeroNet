@@ -24,35 +24,32 @@ def preprocess_data(x, y, limit):
 # Load MNIST copy for image display
 (x_train_image, y_train_image), (x_test_image, y_test_image) = mnist.load_data()
 
-x_train, y_train = preprocess_data(x_train, y_train, 60000)
-x_test, y_test = preprocess_data(x_test, y_test, 10000)
+x_train, y_train = preprocess_data(x_train, y_train, 10000)
+x_test, y_test = preprocess_data(x_test, y_test, 5000)
 
 # Neural Network Layers
+# https://www.kaggle.com/code/cdeotte/how-to-choose-cnn-architecture-mnist/notebook
 layers = [
-    Convolutional((1, 28, 28), 5, 2),
+    Convolutional((1, 28, 28), 5, 5),
     # Input Size = 28
     # Kernel Size = 5
-    # Output Size = Input Size - Kernel Size + 1
+    # Output Size = ((Input Size - Kernel Size) / stride) + 1
     # 28 - 5 + 1 = 24
     Sigmoid(),
-    Dropout(0.25),
-    Convolutional((2, 24, 24), 3, 2),
-    MaxPooling2D(3),
-    Convolutional((2, 22, 22), 3, 2),
+    MaxPooling2D((5, 24, 24), 2, stride=(2,2)),
+    Convolutional((5, 12, 12), 5, 5),
     Sigmoid(),
     # Reshape((2, 20, 20), (2 * 20 * 20, 1)),  # This is an alternative to Flatten
-    Flatten((2, 20, 20)),
-    Dense(2 * 20 * 20, 40),
-    Sigmoid(),
-    Dense(40, 10),
+    Flatten((5, 8, 8)),
+    Dense(5 * 8 * 8, 10),
     Softmax()
 ]
 
 #network = loadNetwork("mnist_network_conv.pkl")
 # Setting the layer properties for every layer in the network.
-conv_layer_properties = LayerProperties(learning_rate=0.01, optimizer=MomentumSGD(), weight_initializer=Xavier())
+conv_layer_properties = LayerProperties(learning_rate=0.01, optimizer=SGD(), weight_initializer=Uniform())
 network = Network(layers, TrainingSet(x_train, y_train, x_test, y_test, np.argmax), loss=categorical_cross_entropy, \
-    loss_prime=categorical_cross_entropy_prime, epochs=5, layer_properties=conv_layer_properties)
+    loss_prime=categorical_cross_entropy_prime, epochs=15, layer_properties=conv_layer_properties)
 network.train()
 saveNetwork(network, "mnist_network_conv.pkl")
 

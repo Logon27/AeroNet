@@ -58,7 +58,6 @@ class Convolutional(Layer):
     # Untied bias: where you use use one bias per kernel and output
     # Tied bias: where you share one bias per kernel
     def forward_untied(self, input):
-        print(input.shape)
         self.input = input
         self.output = np.copy(self.biases)
         for i in range(self.depth):
