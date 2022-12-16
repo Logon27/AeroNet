@@ -4,6 +4,7 @@ from nn.network.training_set import TrainingSet
 from nn.layers.layer_properties import LayerProperties
 
 from copy import deepcopy
+from time import localtime, strftime
 
 class Network():
 
@@ -42,6 +43,8 @@ class Network():
     def train(self):
         if self.verbose:
             self.printNetworkInfo()
+            print("Start Date: {}".format(strftime("%Y-%m-%d", localtime())))
+            print("Start Time: {}".format(strftime("%I:%M:%S %p", localtime())))
             print("Beginning training...")
             startTime = time.time()
 

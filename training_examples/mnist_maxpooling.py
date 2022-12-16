@@ -1,3 +1,5 @@
+# DISCLAIMER The Maxpooling class still needs to be optimized further. This example will take about 15 mins to run on a modern cpu.
+
 import sys
 sys.path.append('..')
 
@@ -30,16 +32,17 @@ x_test, y_test = preprocess_data(x_test, y_test, 10000)
 # Neural Network Layers
 # https://www.kaggle.com/code/cdeotte/how-to-choose-cnn-architecture-mnist/notebook
 layers = [
-    Convolutional((1, 28, 28), 5, 2),
     # Input Size = 28
     # Kernel Size = 5
     # Output Size = ((Input Size - Kernel Size) / stride) + 1
-    # 28 - 5 + 1 = 24
+    # ((28 - 5) / 2) + 1 = 24
+    Convolutional((1, 28, 28), 5, 2),
     Relu(),
-    MaxPooling2D((2, 24, 24), 2, stride=(2,2)),
+    # For the intermediate pooling step
+    # (28 - 5) + 1 = 24
+    MaxPooling2D((2, 24, 24), 2, stride=(2,2), padding=(0,0)),
     Convolutional((2, 12, 12), 5, 2),
     Relu(),
-    # Reshape((2, 20, 20), (2 * 20 * 20, 1)),  # This is an alternative to Flatten
     Flatten((2, 8, 8)),
     Dense(2 * 8 * 8, 10),
     Softmax()
@@ -47,7 +50,7 @@ layers = [
 
 #network = loadNetwork("mnist_network_conv.pkl")
 # Setting the layer properties for every layer in the network.
-conv_layer_properties = LayerProperties(learning_rate=0.01, optimizer=SGD(), weight_initializer=Uniform())
+conv_layer_properties = LayerProperties(learning_rate=0.01, optimizer=SGD(), weight_initializer=Uniform(), bias_initializer=Zero())
 network = Network(layers, TrainingSet(x_train, y_train, x_test, y_test, np.argmax), loss=categorical_cross_entropy, \
     loss_prime=categorical_cross_entropy_prime, epochs=5, layer_properties=conv_layer_properties)
 network.train()

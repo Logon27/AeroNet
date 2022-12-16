@@ -15,28 +15,28 @@ pip install -r requirements.txt
 ## Testing Out A Network
 
 Test your network against one of these datasets...
-```
+```bash
 # move into the training examples directory
 cd training_examples
 # then execute one of the scripts below...
 ```
 
-```
+```bash
+# Simple xor example with dense layers
 python xor.py
-```
 
-```
+# Mnist with dense layers
 python mnist.py
-```
 
-```
 # Convolutional neural network implementation for mnist
 python mnist_conv.py
-```
 
-```
 # Fully convolutional network implementation for mnist
 python mnist_fcn.py
+
+# Convolutional neural network implementation for mnist with max pooling
+# Max pooling still needs some optimization so it runs a bit slow currently
+python mnist_maxpooling.py
 ```
 ---
 
@@ -96,6 +96,7 @@ Convolutional((inputDepth, inputWidth, inputHeight), kernelSize, numKernels)
 Reshape() # Modifies the shape of the numpy arrays passed between layers
 Flatten() # Flattens a numpy array into a 2D matrix with a single column
 Dropout(probability) # Randomly drops layer outputs based on a probability to prevent overfitting
+MaxPooling2D((inputDepth, inputWidth, inputHeight), kernelSize, stride=(int, int), padding=(int, int)) #
 
 # Activation Functions
 Sigmoid()
@@ -161,7 +162,6 @@ This library used to support CUDA. However, it has since been removed because it
 - Package And Host The Library
 - Implement More Loss Functions
 - Validate Leaky Relu Activation Function
-- Implement Max Pooling
 - Implement Avg Pooling
 - Implement Adaptive Avg Pooling
 - Implement Batch Normalization
