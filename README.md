@@ -96,7 +96,7 @@ Convolutional((inputDepth, inputWidth, inputHeight), kernelSize, numKernels)
 Reshape() # Modifies the shape of the numpy arrays passed between layers
 Flatten() # Flattens a numpy array into a 2D matrix with a single column
 Dropout(probability) # Randomly drops layer outputs based on a probability to prevent overfitting
-# MaxPooling2D is slightly inefficient at the moment, but it is a working implementation.
+# Max pooling kernel size currently only takes an integer to make a square kernel
 MaxPooling2D((inputDepth, inputWidth, inputHeight), kernelSize, stride=(int, int), padding=(int, int))
 
 # Activation Functions

@@ -5,9 +5,6 @@ from nn.optimizers import *
 from typing import Tuple
 from numpy.lib.stride_tricks import as_strided
 
-### DISCLAIMER ###
-# Maxpooling is still needs to be optimized further and results in slower training times.
-
 # Helpful reference articles
 # https://stackoverflow.com/questions/54962004/implement-max-mean-poolingwith-stride-with-numpy
 # https://towardsdatascience.com/advanced-numpy-master-stride-tricks-with-25-illustrated-exercises-923a9393ab20#1f28
@@ -41,6 +38,7 @@ class MaxPooling2D(Layer):
                             "dimension 2 = input height\n" \
                             "This library does not handle cropping inputs for kernels / strides that do not evenly divide the input.")
         
+        # The final output shape of the MaxPooling layer
         self.output_shape = (input_shape[0], 
                             (input_shape[1] - self.kernel_size + (2*padding[0])) // self.stride[0] + 1,
                             (input_shape[2] - self.kernel_size + (2*padding[1])) // self.stride[1] + 1)
@@ -65,25 +63,35 @@ class MaxPooling2D(Layer):
         # Result of max pooling along the stride axes
         out = strided_result.max(axis=(3, 4))
 
-        # Calculating the argmax on the entire array instead of inside
-        # the nested for loop unironically improves performance by 30%.
-
-        # Flatten the last two array dimensions because argmax only supports flat arrays.
+        # Flatten the last two array dimensions because argmax only supports flat arrays. Now a 4D array.
         argmax_arr = np.reshape(strided_result, (strided_result.shape[0], strided_result.shape[1], strided_result.shape[2], strided_result.shape[3] * strided_result.shape[4]))
+        # Find the index of the max value on the flat array (axis 3). argmax only takes the index of the first max value if there are duplicates.
         argmax_arr = np.argmax(argmax_arr, axis=3)
 
-        for depth in range(strided_result.shape[0]):
-            for x in range(strided_result.shape[1]):
-                for y in range(strided_result.shape[2]):
-                    # Calculate the local index of the max value in each of the strides.
-                    # np.unravel_index converts the 1D argmax index back into the 2D local stride index we need.
-                    local_stride_index = np.unravel_index(argmax_arr[depth][x][y], strided_result[depth][x][y].shape)
-                    local_stride_index_x, local_stride_index_y = local_stride_index
+        # Calculate the input index based on the stride's local index, the strided_result array index, and the stride itself.
+        # Then store that input index to be used as a sort of reordering / mask for the output gradient in backprop.
+        # self.index_map_x[depth][x][y] = local_stride_index_x + (strided_result_x_index * self.stride[0])
+        # self.index_map_y[depth][x][y] = local_stride_index_y + (strided_result_y_index * self.stride[1])
 
-                    # Calculate the input index based on the stride's local index, the strided_result array index, and the stride itself.
-                    # Then store that input index to be used as a sort of reordering / mask for the output gradient in backprop.
-                    self.index_map_x[depth][x][y] = local_stride_index_x + (x * self.stride[0])
-                    self.index_map_y[depth][x][y] = local_stride_index_y + (y * self.stride[1])
+        # indices gives me a mask for the stride's coordinates in the output array. See the link below for examples...
+        # https://numpy.org/doc/stable/reference/generated/numpy.indices.html
+        indices = np.indices((strided_result.shape[1], strided_result.shape[2]))
+
+        # Make a copy of the argmax_arr because we will need two copies.
+        # One for the x coordinates and one for the y coordinates.
+        argmax_arr_x = argmax_arr.copy()
+        # Floor divide by the stride's row size (number of columns) to get the x coordinate
+        argmax_arr_x = argmax_arr_x // self.stride[1]
+        # Modulus by the stride's row size (number of columns) to get the y coordinate. (uses the original argmax_arr for efficiency instead of another copy)
+        argmax_arr_y = argmax_arr % self.stride[1]
+        # Multiply each indice mask by the cooresponding row or column size
+        indices_x = indices[0] * self.stride[0]
+        indices_y = indices[1] * self.stride[1]
+        # Loop through the depth of the input and apply the mask calculation to each input depth
+        for depth in range(self.depth):
+            # Final calculation of the local_stride_index added with the (stride output coordinate * stride size)
+            self.index_map_x[depth] = argmax_arr_x[depth] + indices_x
+            self.index_map_y[depth] = argmax_arr_y[depth] + indices_y
         return out
 
     def backward(self, output_gradient):
