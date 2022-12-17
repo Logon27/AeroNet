@@ -64,12 +64,20 @@ class MaxPooling2D(Layer):
                 
         # Result of max pooling along the stride axes
         out = strided_result.max(axis=(3, 4))
-        
+
+        # Calculating the argmax on the entire array instead of inside
+        # the nested for loop unironically improves performance by 30%.
+
+        # Flatten the last two array dimensions because argmax only supports flat arrays.
+        argmax_arr = np.reshape(strided_result, (strided_result.shape[0], strided_result.shape[1], strided_result.shape[2], strided_result.shape[3] * strided_result.shape[4]))
+        argmax_arr = np.argmax(argmax_arr, axis=3)
+
         for depth in range(strided_result.shape[0]):
             for x in range(strided_result.shape[1]):
                 for y in range(strided_result.shape[2]):
                     # Calculate the local index of the max value in each of the strides.
-                    local_stride_index = np.unravel_index(np.argmax(strided_result[depth][x][y], axis=None), strided_result[depth][x][y].shape)
+                    # np.unravel_index converts the 1D argmax index back into the 2D local stride index we need.
+                    local_stride_index = np.unravel_index(argmax_arr[depth][x][y], strided_result[depth][x][y].shape)
                     local_stride_index_x, local_stride_index_y = local_stride_index
 
                     # Calculate the input index based on the stride's local index, the strided_result array index, and the stride itself.
@@ -93,7 +101,7 @@ class MaxPooling2D(Layer):
                     input_gradient[depth][input_x_index][input_y_index] += output_gradient[depth][x][y]
         return input_gradient
 
-    # Helper for debug printing
+    # Modify string representation for network architecture printing
     def __str__(self):
         return self.__class__.__name__ + "(({}, {}, {}), kernel_size = {}, stride = {}, padding = {})".format(
             self.input_shape[0],
