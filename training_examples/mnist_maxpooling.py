@@ -1,5 +1,3 @@
-# DISCLAIMER The Maxpooling class still needs to be optimized further. This example will take about 15 mins to run on a modern cpu.
-
 import sys
 sys.path.append('..')
 
