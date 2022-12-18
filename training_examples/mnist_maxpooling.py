@@ -38,7 +38,7 @@ layers = [
     Relu(),
     # For the intermediate pooling step
     # (28 - 5) + 1 = 24
-    MaxPooling2D((2, 24, 24), 2, stride=(2,2), padding=(0,0)),
+    MaxPooling2D((2, 24, 24), kernel_size=(2,2), stride=(2,2), padding=(0,0)),
     Convolutional((2, 12, 12), 5, 2),
     Relu(),
     Flatten((2, 8, 8)),
