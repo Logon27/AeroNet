@@ -13,6 +13,6 @@ class Activation(Layer):
     def backward(self, output_gradient):
         return np.multiply(output_gradient, self.activation_prime(self.input))
     
-    #Helper for debug printing
+    # Modify string representation for network architecture printing
     def __str__(self):
         return self.__class__.__name__ + "()"

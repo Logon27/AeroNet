@@ -98,7 +98,13 @@ class Convolutional(Layer):
         self.biases += self.layer_properties.bias_optimizer.calc(self.layer_properties.learning_rate, np.apply_over_axes(np.sum, output_gradient, [1,2]))
         return input_gradient
 
-    # Helper for debug printing
+    # Modify string representation for network architecture printing
     def __str__(self):
-        return self.__class__.__name__ + "(" + "(" + str(self.input_shape[0]) + ", " + str(self.input_shape[1]) + ", " \
-            + str(self.input_shape[2]) + ")"  + ", " + str(self.kernels_shape[3]) + ", " + str(self.depth) + ") bias_mode = " + self.bias_mode
+        return self.__class__.__name__ + "(({}, {}, {}), kernel_size = {}, depth = {}, bias_mode = {})".format(
+            self.input_shape[0],
+            self.input_shape[1],
+            self.input_shape[2],
+            self.kernels_shape[3],
+            self.depth,
+            self.bias_mode
+        )

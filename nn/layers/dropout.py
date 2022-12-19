@@ -15,6 +15,6 @@ class Dropout(Layer):
     def backward(self, output_gradient):
         return output_gradient * self.mask
 
-    #Helper for debug printing
+    # Modify string representation for network architecture printing
     def __str__(self):
-        return self.__class__.__name__ + "(" + str(self.probability) +  ")"
+        return self.__class__.__name__ + "({})".format(self.probability)

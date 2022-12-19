@@ -12,6 +12,6 @@ class Flatten(Layer):
     def backward(self, output_gradient):
         return np.reshape(output_gradient, self.input_shape)
 
-    # Helper for debug printing
+    # Modify string representation for network architecture printing
     def __str__(self):
-        return self.__class__.__name__ + "(" + ")"
+        return self.__class__.__name__ + "()"

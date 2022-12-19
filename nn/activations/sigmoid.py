@@ -11,6 +11,7 @@ class Sigmoid(Activation):
             return s * (1 - s)
 
         super().__init__(sigmoid, sigmoid_prime)
-            
+    
+    # Modify string representation for network architecture printing
     def __str__(self):
         return self.__class__.__name__ + "()"

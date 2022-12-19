@@ -2,7 +2,7 @@ from .optimizer import Optimizer
 import numpy as np
 
 class MomentumSGD(Optimizer):
-    def __init__(self, mu=0.95):
+    def __init__(self, mu=0.90):
         self.mu = mu
         self.v = None
     

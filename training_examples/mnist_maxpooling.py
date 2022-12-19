@@ -49,8 +49,14 @@ layers = [
 #network = loadNetwork("mnist_network_conv.pkl")
 # Setting the layer properties for every layer in the network.
 conv_layer_properties = LayerProperties(learning_rate=0.01, optimizer=SGD(), weight_initializer=Uniform(), bias_initializer=Zero())
-network = Network(layers, TrainingSet(x_train, y_train, x_test, y_test, np.argmax), loss=categorical_cross_entropy, \
-    loss_prime=categorical_cross_entropy_prime, epochs=5, layer_properties=conv_layer_properties)
+network = Network(
+    layers,
+    TrainingSet(x_train, y_train, x_test, y_test, np.argmax),
+    loss=categorical_cross_entropy,
+    loss_prime=categorical_cross_entropy_prime,
+    epochs=5,
+    layer_properties=conv_layer_properties
+)
 network.train()
 saveNetwork(network, "mnist_network_conv.pkl")
 
