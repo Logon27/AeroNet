@@ -46,7 +46,7 @@ python mnist_maxpooling.py
 # Import all neural network classes.
 from nn import *
 
-# Network layers are initalized as a list
+# Network layers are initialized as a list of objects
 network_layers = [
     Dense(28 * 28, 70),
     Sigmoid(),
@@ -57,8 +57,14 @@ network_layers = [
 ]
 
 # Create a network object
-network = Network(network_layers, TrainingSet(input_train, output_train, input_test, output_test, post_processing), \
-    loss_function, loss_function_prime, epochs=10, batch_size=1)
+network = Network(
+    network_layers,
+    TrainingSet(input_train, output_train, input_test, output_test, post_processing),
+    loss_function,
+    loss_function_prime,
+    epochs=10,
+    batch_size=1
+)
 
 # Train the network
 network.train()
@@ -143,20 +149,34 @@ network_layers = [
 # Optionally you can set the layer properties for every layer in the network.
 # This is done by setting layer properties on the network class itself.
 all_layer_properties = LayerProperties(learning_rate=0.05, weight_initializer=Uniform(), bias_initializer=Uniform(), optimizer=SGD())
-network = Network(network_layers, TrainingSet(input_train, output_train, input_test, output_test), \
-    loss_function, loss_function_prime, epochs=10, batch_size=1, layer_properties=all_layer_properties)
+network = Network(
+    network_layers,
+    TrainingSet(input_train, output_train, input_test, output_test),
+    loss_function,
+    loss_function_prime,
+    epochs=10,
+    batch_size=1,
+    layer_properties=all_layer_properties
+)
 
 
 # You can also choose to overwrite only some properties at both the network and layer level.
 # For example the following would only change the learning rate (for all layers) but leave all other defaults the same.
 all_layer_properties = LayerProperties(learning_rate=0.05)
-network = Network(network_layers, TrainingSet(input_train, output_train, input_test, output_test), \
-    loss_function, loss_function_prime, epochs=10, batch_size=1, layer_properties=all_layer_properties)
+network = Network(
+    network_layers,
+    TrainingSet(input_train, output_train, input_test, output_test),
+    loss_function,
+    loss_function_prime,
+    epochs=10,
+    batch_size=1,
+    layer_properties=all_layer_properties
+)
 ```
 
 ## CUDA Support
 
-This library used to support CUDA. However, it has since been removed because it was too hard to maintain with more complex layer implementations.
+This library no longer supports CUDA. It has been removed because it was too hard to maintain with more complex layer implementations.
 
 ## TODO
 

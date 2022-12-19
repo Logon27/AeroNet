@@ -11,5 +11,6 @@ class Tanh(Activation):
 
         super().__init__(tanh, tanh_prime)
 
+    # Modify string representation for network architecture printing
     def __str__(self):
         return self.__class__.__name__ + "()"

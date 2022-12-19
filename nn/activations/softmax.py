@@ -14,5 +14,6 @@ class Softmax(Layer):
         n = np.size(self.output)
         return np.dot((np.identity(n) - self.output.T) * self.output, output_gradient)
     
+    # Modify string representation for network architecture printing
     def __str__(self):
         return self.__class__.__name__ + "()"

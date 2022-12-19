@@ -38,8 +38,15 @@ layers = [
     Softmax()
 ]
 # network = loadNetwork("mnist_network.pkl")
-network = Network(layers, TrainingSet(x_train, y_train, x_test, y_test, np.argmax), loss=mse, loss_prime=mse_prime, epochs=10, batch_size=1, \
-    layer_properties=LayerProperties(learning_rate=0.01, optimizer=MomentumSGD()))
+network = Network(
+    layers,
+    TrainingSet(x_train, y_train, x_test, y_test, np.argmax),
+    loss=mse,
+    loss_prime=mse_prime,
+    epochs=10,
+    batch_size=1,
+    layer_properties=LayerProperties(learning_rate=0.01, optimizer=SGD())
+)
 network.train()
 saveNetwork(network, "mnist_network.pkl")
 

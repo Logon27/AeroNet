@@ -14,6 +14,7 @@ class LeakyRelu(Activation):
             return dx
 
         super().__init__(leaky_relu, leaky_relu_prime)
-        
+    
+    # Modify string representation for network architecture printing
     def __str__(self):
         return self.__class__.__name__ + "()"

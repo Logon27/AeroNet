@@ -36,6 +36,6 @@ class Dense(Layer):
         self.bias += self.layer_properties.bias_optimizer.calc(self.layer_properties.learning_rate, output_gradient)
         return input_gradient
     
-    #Helper for debug printing
+    # Modify string representation for network architecture printing
     def __str__(self):
-        return self.__class__.__name__ + "(" + str(self.weights.shape[1]) + ", " + str(self.weights.shape[0]) + ")"
+        return self.__class__.__name__ + "({}, {})".format(self.weights.shape[1], self.weights.shape[0])

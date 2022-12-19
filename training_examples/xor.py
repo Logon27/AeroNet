@@ -19,8 +19,15 @@ layers = [
 ]
 
 #network = loadNetwork("xor_network.pkl")
-network = Network(layers, TrainingSet(X, Y, X, Y, np.rint), loss=mse, loss_prime=mse_prime, epochs=1000, batch_size=1, \
-    layer_properties=LayerProperties(learning_rate=0.03))
+network = Network(
+    layers,
+    TrainingSet(X, Y, X, Y, np.rint),
+    loss=mse,
+    loss_prime=mse_prime,
+    epochs=1000,
+    batch_size=1,
+    layer_properties=LayerProperties(learning_rate=0.03)
+)
 # Train The Network
 network.train()
 saveNetwork(network, "xor_network.pkl")

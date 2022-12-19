@@ -12,6 +12,6 @@ class Reshape(Layer):
     def backward(self, output_gradient):
         return np.reshape(output_gradient, self.input_shape)
 
-    # Helper for debug printing
+    # Modify string representation for network architecture printing
     def __str__(self):
-        return self.__class__.__name__ + "(" + str(self.input_shape) + ", " + str(self.output_shape) + ")"
+        return self.__class__.__name__ + "({}, {})".format(self.input_shape, self.output_shape)
