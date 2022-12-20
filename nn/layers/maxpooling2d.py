@@ -20,10 +20,8 @@ class MaxPooling2D(Layer):
     def __init__(self, input_shape, kernel_size: Tuple[int,int]= (2,2), stride: Tuple[int,int]= (2,2), padding: Tuple[int,int]= (0,0)):
         self.input_shape = input_shape
         self.kernel_size = kernel_size
-        print(self.kernel_size)
         self.depth = input_shape[0]
         self.stride = stride
-        print(self.stride)
         # padding supports various padding formats depending on how you want to pad the various sides.
         # 2
         # (2, 3)
