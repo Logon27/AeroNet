@@ -174,6 +174,42 @@ network = Network(
 )
 ```
 
+## Stride and Padding Notation
+
+Sometimes you might see notation like **array[x][y]**. However, this is kind of a confusing syntax that people (including myself) write. Do not confuse the arbitrary variable **x** with the width. It does not represent the "x" of a coordinate system; in reality it represents the height. If you view the array syntax from a coordinate perspective it is really **array[height][width]**. So when you are inputting parameters for strides and padding it is really with the syntax **(height, width)**.
+
+### Striding
+
+Striding only has two dimensions, that is striding in the "height" dimension and striding in the "width" dimension. Striding follows the syntax **(height_stride, width_stride)**. So a stride of (2,3) would move the kernel 2 positions to the right or 3 positions down.
+
+### Padding
+
+Padding directly uses numpy's implementation of padding which can be found [here](https://numpy.org/doc/stable/reference/generated/numpy.pad.html). I highly advise you use one of two syntaxes for padding (shown below).
+
+(pad_all_4_sides)  
+```padding = (0)```
+
+((left_height_pad,right_height_pad), (left_width_pad,right_width_pad))  
+```padding = ((1,1), (2,2))```
+
+Please **DO NOT USE THE** syntax (1,2) unless you know what you are doing. It does not operate how you think.
+
+For example...
+
+```python
+a = [[1], [1]]
+# Pads zeros by default
+print(np.pad(a, (1,2), 'constant'))
+
+# Produces the following output
+[[0 0 0 0]
+ [0 1 0 0]
+ [0 1 0 0]
+ [0 0 0 0]
+ [0 0 0 0]]
+# Not what you would have expected, right?
+```
+
 ## CUDA Support
 
 This library no longer supports CUDA. It has been removed because it was too hard to maintain with more complex layer implementations.

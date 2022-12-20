@@ -17,14 +17,13 @@ from numpy.lib.stride_tricks import as_strided
 # The max pooling layer does not change the depth of the input. And it has no trainable parameters.
 class MaxPooling2D(Layer):
 
-    def __init__(self, input_shape, kernel_size: Tuple[int,int]= (2,2), stride: Tuple[int,int]= (2,2), padding: Tuple[int,int]= (0,0)):
+    def __init__(self, input_shape, kernel_size: Tuple[int,int]= (2,2), stride: Tuple[int,int]= (2,2), padding = (0)):
         self.input_shape = input_shape
         self.kernel_size = kernel_size
         self.depth = input_shape[0]
         self.stride = stride
         # padding supports various padding formats depending on how you want to pad the various sides.
-        # 2
-        # (2, 3)
+        # 2 or (2)
         # ((1,2),(2,1))
         self.padding = padding
 
@@ -34,8 +33,8 @@ class MaxPooling2D(Layer):
         if not dimension_1.is_integer() or not dimension_2.is_integer():
             raise ValueError("(input_size - kernel_size + (2 * padding)) / stride ... must be an integer.\n" \
                             "dimension 0 = depth\n" \
-                            "dimension 1 = input width\n" \
-                            "dimension 2 = input height\n" \
+                            "dimension 1 = input height\n" \
+                            "dimension 2 = input width\n" \
                             "This library does not handle cropping inputs for kernels / strides that do not evenly divide the input.")
         
         # The final output shape of the MaxPooling layer
