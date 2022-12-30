@@ -22,14 +22,26 @@ class MaxPooling2D(Layer):
         self.kernel_size = kernel_size
         self.depth = input_shape[0]
         self.stride = stride
-        # padding supports various padding formats depending on how you want to pad the various sides.
-        # 2 or (2)
-        # ((1,2),(2,1))
-        self.padding = padding
+
+        # padding supports two padding formats depending on how you want to pad the various sides.
+        # 2 or (2). Pads all sides
+        # ((top, bottom), (left, right))
+        # ((1,2),(2,1)). Pads sides individually
+        
+        # checks for single integer
+        if isinstance(padding, int):
+            # The extra tuple of zeros is for the depth dimension which needs no padding.
+            self.padding = ((0, 0), (padding, padding), (padding, padding))
+        # checks for single value in tuple
+        elif isinstance(padding, tuple) and len(padding) == 1:
+            self.padding = ((0, 0), (padding[0], padding[0]), (padding[0], padding[0]))
+        # Otherwise it just sets the values. 2D tuple with 4 values.
+        else:
+            self.padding = ((0, 0), (padding[0][0], padding[0][1]), (padding[1][0], padding[1][1]))
 
         # Error checking to make sure the kernel and stride can evenly map across the input.
-        dimension_1 = (input_shape[1] - self.kernel_size[0] + (2*padding[0])) / self.stride[0] + 1
-        dimension_2 = (input_shape[2] - self.kernel_size[1] + (2*padding[1])) / self.stride[1] + 1
+        dimension_1 = (input_shape[1] - self.kernel_size[0] + (self.padding[1][0] + self.padding[1][1])) / self.stride[0] + 1
+        dimension_2 = (input_shape[2] - self.kernel_size[1] + (self.padding[2][0] + self.padding[2][1])) / self.stride[1] + 1
         if not dimension_1.is_integer() or not dimension_2.is_integer():
             raise ValueError("(input_size - kernel_size + (2 * padding)) / stride ... must be an integer.\n" \
                             "dimension 0 = depth\n" \
@@ -39,16 +51,17 @@ class MaxPooling2D(Layer):
         
         # The final output shape of the MaxPooling layer
         self.output_shape = (input_shape[0], 
-                            (input_shape[1] - self.kernel_size[0] + (2*padding[0])) // self.stride[0] + 1,
-                            (input_shape[2] - self.kernel_size[1] + (2*padding[1])) // self.stride[1] + 1)
+                            (input_shape[1] - self.kernel_size[0] + (self.padding[1][0] + self.padding[1][1])) // self.stride[0] + 1,
+                            (input_shape[2] - self.kernel_size[1] + (self.padding[2][0] + self.padding[2][1])) // self.stride[1] + 1)
         # This index map contains the input indexes that the output gradient maps to.
         # Basically the value at index_map[depth][x][y] is coordinates to the input that output_gradient[depth][x][y] needs to be applied to.
         self.index_map_x = np.zeros((self.depth, self.output_shape[1], self.output_shape[2]), dtype="int")
         self.index_map_y = np.zeros((self.depth, self.output_shape[1], self.output_shape[2]), dtype="int")
 
     def forward(self, input):
-        # Padding
-        input = np.pad(input, self.padding, mode='constant')
+        # Padding. Have to pad with negative infinity for max pooling.
+        # Otherwise padding could be identified as the "max" if the inputs are negative values.
+        input = np.pad(input, self.padding, mode='constant', constant_values=np.NINF)
         
         # The array is 5D because it correlates each stride calculated with each output. (depth, output_x, output_y, stride_result_x, stride_result_y)
         # This is a pre-processing step so we can call the max function on each stride output and map them to the output shape.

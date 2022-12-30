@@ -184,31 +184,19 @@ Striding only has two dimensions, that is striding in the "height" dimension and
 
 ### Padding
 
-Padding directly uses numpy's implementation of padding which can be found [here](https://numpy.org/doc/stable/reference/generated/numpy.pad.html). I highly advise you use one of two syntaxes for padding (shown below).
+There are two different allowed padding formats.
 
-(pad_all_4_sides)  
+**(pad_all_4_sides)**  
 ```padding = (0)```
+or...
+```padding = 0```
 
-((left_height_pad,right_height_pad), (left_width_pad,right_width_pad))  
+**((top_height_pad,bottom_height_pad), (left_width_pad,right_width_pad))**  
+Alternatively you could think of the format as...  
+**((top, bottom), (left, right))**  
 ```padding = ((1,1), (2,2))```
 
-Please **DO NOT USE THE** syntax (1,2) unless you know what you are doing. It does not operate how you think.
-
-For example...
-
-```python
-a = [[1], [1]]
-# Pads zeros by default
-print(np.pad(a, (1,2), 'constant'))
-
-# Produces the following output
-[[0 0 0 0]
- [0 1 0 0]
- [0 1 0 0]
- [0 0 0 0]
- [0 0 0 0]]
-# Not what you would have expected, right?
-```
+The syntax (1,2) **IS NOT SUPPORTED**.
 
 ## CUDA Support
 
