@@ -104,6 +104,10 @@ class MaxPooling2D(Layer):
             # Final calculation of the local_stride_index added with the (stride output coordinate * stride size)
             self.index_map_x[depth] = argmax_arr_x[depth] + indices_x
             self.index_map_y[depth] = argmax_arr_y[depth] + indices_y
+            # Elementwise subtract top and left padding from the indices.
+            # This is because we calculated the input index for the padded input and not the original input.
+            self.index_map_x[depth] = self.index_map_x[depth] - self.padding[1][0]
+            self.index_map_y[depth] = self.index_map_y[depth] - self.padding[2][0]
         return out
 
     def backward(self, output_gradient):
@@ -129,5 +133,5 @@ class MaxPooling2D(Layer):
             self.input_shape[2],
             self.kernel_size,
             self.stride,
-            self.padding
+            self.padding[1:]
         )

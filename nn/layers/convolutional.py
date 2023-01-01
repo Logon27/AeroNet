@@ -5,10 +5,11 @@ from nn.layers.layer_properties import LayerProperties
 from nn.initializers import *
 from nn.optimizers import *
 from copy import deepcopy
+from typing import Tuple
 
 class Convolutional(Layer):
 
-    def __init__(self, input_shape, kernel_size: int, depth: int, bias_mode: str = 'untied', layer_properties: LayerProperties = None):
+    def __init__(self, input_shape, kernel_size: int, depth: int, stride: Tuple[int,int]= (1,1), padding = (0), bias_mode: str = 'untied', layer_properties: LayerProperties = None):
         # Default layer properties
         self.layer_properties = LayerProperties(learning_rate=0.05, weight_initializer=Uniform(), bias_initializer=Uniform(), optimizer=SGD())
 
@@ -27,10 +28,35 @@ class Convolutional(Layer):
         self.depth = depth
         self.input_shape = input_shape
         self.input_depth = input_depth
-        self.output_shape = (depth, input_height - kernel_size + 1, input_width - kernel_size + 1)
         self.kernel_size = kernel_size
         self.kernels_shape = (depth, input_depth, kernel_size, kernel_size)
         self.kernels = self.layer_properties.weight_initializer.get(*self.kernels_shape)
+
+        self.stride = stride
+        # checks for single integer
+        if isinstance(padding, int):
+            # The extra tuple of zeros is for the depth dimension which needs no padding.
+            self.padding = ((0, 0), (padding, padding), (padding, padding))
+        # checks for single value in tuple
+        elif isinstance(padding, tuple) and len(padding) == 1:
+            self.padding = ((0, 0), (padding[0], padding[0]), (padding[0], padding[0]))
+        # Otherwise it just sets the values. 2D tuple with 4 values.
+        else:
+            self.padding = ((0, 0), (padding[0][0], padding[0][1]), (padding[1][0], padding[1][1]))
+
+        # Error checking to make sure the kernel and stride can evenly map across the input.
+        dimension_1 = (input_shape[1] - self.kernel_size + (self.padding[1][0] + self.padding[1][1])) / self.stride[0] + 1
+        dimension_2 = (input_shape[2] - self.kernel_size + (self.padding[2][0] + self.padding[2][1])) / self.stride[1] + 1
+        if not dimension_1.is_integer() or not dimension_2.is_integer():
+            raise ValueError("(input_size - kernel_size + (2 * padding)) / stride ... must be an integer.\n" \
+                            "dimension 0 = depth\n" \
+                            "dimension 1 = input height\n" \
+                            "dimension 2 = input width\n" \
+                            "This library does not handle cropping inputs for kernels / strides that do not evenly divide the input.")
+
+        self.output_shape = (self.depth,
+                            (self.input_shape[1] - self.kernel_size + (self.padding[1][0] + self.padding[1][1])) // self.stride[0] + 1,
+                            (self.input_shape[2] - self.kernel_size + (self.padding[2][0] + self.padding[2][1])) // self.stride[1] + 1)
 
         valid_bias_modes = {'tied', 'untied'}
         if bias_mode not in valid_bias_modes:
@@ -58,53 +84,99 @@ class Convolutional(Layer):
     # Untied bias: where you use use one bias per kernel and output
     # Tied bias: where you share one bias per kernel
     def forward_untied(self, input):
+        input = np.pad(input, self.padding, mode='constant')
         self.input = input
         self.output = np.copy(self.biases)
         for i in range(self.depth):
             for j in range(self.input_depth):
-                self.output[i] += signal.correlate2d(self.input[j], self.kernels[i, j], "valid")
+                self.output[i] += signal.correlate2d(input[j], self.kernels[i, j], "valid")[::self.stride[0], ::self.stride[1]]
         return self.output
 
     def backward_untied(self, output_gradient):
+        # https://medium.com/@mayank.utexas/backpropagation-for-convolution-with-strides-8137e4fc2710
+        # link to the dilation concept is above
+        # The output gradient must be dilated before it can be correlated with the input due to striding.
+        depth, x, y = output_gradient.shape
+        dilated_output_gradient = np.zeros((depth,
+                        x + ((self.stride[0] - 1) * x - (1 * min(self.stride[0] - 1, 1))),
+                        y + ((self.stride[1] - 1) * y - (1 * min(self.stride[1] - 1, 1)))),
+                        dtype=output_gradient.dtype)
+        dilated_output_gradient[::, ::self.stride[0], ::self.stride[1]] = output_gradient
+
+        # If there is a non zero padding of we need to crop the output_gradient to match the input gradient.
+        # This results in minor data loss but is easier to implement.
+        # [top:bottom, left:right]
+        dilated_trunc_output_gradient = dilated_output_gradient
+        if self.padding[1][0] != 0:
+            dilated_trunc_output_gradient = dilated_trunc_output_gradient[:, self.padding[1][0]:, :]
+        if self.padding[1][1] != 0:
+            dilated_trunc_output_gradient = dilated_trunc_output_gradient[:, :-self.padding[1][1], :]
+        if self.padding[2][0] != 0:
+            dilated_trunc_output_gradient = dilated_trunc_output_gradient[:, :, self.padding[2][0]:]
+        if self.padding[2][1] != 0:
+            dilated_trunc_output_gradient = dilated_trunc_output_gradient[:, :, :-self.padding[2][1]]
+
         kernels_gradient = np.zeros(self.kernels_shape)
         input_gradient = np.zeros(self.input_shape)
         for i in range(self.depth):
             for j in range(self.input_depth):
-                kernels_gradient[i, j] = signal.correlate2d(self.input[j], output_gradient[i], "valid")
-                input_gradient[j] += signal.convolve2d(output_gradient[i], self.kernels[i, j], "full")
+                kernels_gradient[i, j] = signal.correlate2d(self.input[j], dilated_output_gradient[i], "valid")
+                input_gradient[j] += signal.convolve2d(dilated_trunc_output_gradient[i], self.kernels[i, j], "full")
 
         self.kernels += self.layer_properties.weight_optimizer.calc(self.layer_properties.learning_rate, kernels_gradient)
         self.biases += self.layer_properties.bias_optimizer.calc(self.layer_properties.learning_rate, output_gradient)
         return input_gradient
     
     def forward_tied(self, input):
+        input = np.pad(input, self.padding, mode='constant')
         self.input = input
-        self.output = np.zeros((self.depth, input.shape[1] - self.kernel_size + 1, input.shape[2] - self.kernel_size + 1))
+        self.output = np.zeros(self.output_shape)
         for i in range(self.depth):
             for j in range(self.input_depth):
-                self.output[i] += signal.correlate2d(self.input[j], self.kernels[i, j], "valid")
+                self.output[i] += signal.correlate2d(self.input[j], self.kernels[i, j], "valid")[::self.stride[0], ::self.stride[1]]
             self.output[i] += self.biases[i]
         return self.output
 
     def backward_tied(self, output_gradient):
+        depth, x, y = output_gradient.shape
+        dilated_output_gradient = np.zeros((depth,
+                        x + ((self.stride[0] - 1) * x - (1 * min(self.stride[0] - 1, 1))),
+                        y + ((self.stride[1] - 1) * y - (1 * min(self.stride[1] - 1, 1)))),
+                        dtype=output_gradient.dtype)
+        dilated_output_gradient[::, ::self.stride[0], ::self.stride[1]] = output_gradient
+
+        # If there is a non zero padding of we need to crop the output_gradient
+        # [top:bottom, left:right]
+        dilated_trunc_output_gradient = dilated_output_gradient
+        if self.padding[1][0] != 0:
+            dilated_trunc_output_gradient = dilated_trunc_output_gradient[:, self.padding[1][0]:, :]
+        if self.padding[1][1] != 0:
+            dilated_trunc_output_gradient = dilated_trunc_output_gradient[:, :-self.padding[1][1], :]
+        if self.padding[2][0] != 0:
+            dilated_trunc_output_gradient = dilated_trunc_output_gradient[:, :, self.padding[2][0]:]
+        if self.padding[2][1] != 0:
+            dilated_trunc_output_gradient = dilated_trunc_output_gradient[:, :, :-self.padding[2][1]]
+
         kernels_gradient = np.zeros(self.kernels_shape)
         input_gradient = np.zeros(self.input_shape)
         for i in range(self.depth):
             for j in range(self.input_depth):
-                kernels_gradient[i, j] = signal.correlate2d(self.input[j], output_gradient[i], "valid")
-                input_gradient[j] += signal.convolve2d(output_gradient[i], self.kernels[i, j], "full")
+                kernels_gradient[i, j] = signal.correlate2d(self.input[j], dilated_output_gradient[i], "valid")
+                input_gradient[j] += signal.convolve2d(dilated_trunc_output_gradient[i], self.kernels[i, j], "full")
         self.kernels += self.layer_properties.weight_optimizer.calc(self.layer_properties.learning_rate, kernels_gradient)
         # Sum all the gradients for the output gradient of each kernel then multiply by the learning rate.
-        self.biases += self.layer_properties.bias_optimizer.calc(self.layer_properties.learning_rate, np.apply_over_axes(np.sum, output_gradient, [1,2]))
+        self.biases += self.layer_properties.bias_optimizer.calc(self.layer_properties.learning_rate, np.sum(output_gradient, keepdims=True, axis=(1,2)))
         return input_gradient
 
     # Modify string representation for network architecture printing
     def __str__(self):
-        return self.__class__.__name__ + "(({}, {}, {}), kernel_size = {}, depth = {}, bias_mode = {})".format(
+        return self.__class__.__name__ + "(({}, {}, {}), kernel_size = {}, depth = {}, bias_mode = {}, stride = {}, padding = {})".format(
             self.input_shape[0],
             self.input_shape[1],
             self.input_shape[2],
             self.kernels_shape[3],
             self.depth,
-            self.bias_mode
+            self.bias_mode,
+            self.stride,
+            self.padding[1:]
         )
