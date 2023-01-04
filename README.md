@@ -202,6 +202,16 @@ The syntax (1,2) **IS NOT SUPPORTED**.
 
 This library no longer supports CUDA. It has been removed because it was too hard to maintain with more complex layer implementations.
 
+## Running Unit Tests
+
+```bash
+# Run all tests in a directory
+python -m unittest discover <test_directory>
+
+# For single test
+python -m unittest file_name.py
+```
+
 ## TODO
 
 - Package And Host The Library
