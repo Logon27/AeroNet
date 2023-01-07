@@ -98,12 +98,12 @@ post_processing is a function applied to your network prediction and training se
 
 ```python
 Dense(numInputNeurons, numOutputNeurons) # For weight manipulation
-Convolutional((inputDepth, inputWidth, inputHeight), kernelSize, numKernels)
+Convolutional((inputDepth, inputWidth, inputHeight), kernelSize, numKernels, stride=(int, int), padding=((int, int), (int, int)))
 Reshape() # Modifies the shape of the numpy arrays passed between layers
 Flatten() # Flattens a numpy array into a 2D matrix with a single column
 Dropout(probability) # Randomly drops layer outputs based on a probability to prevent overfitting
 # Max pooling kernel size currently only takes an integer to make a square kernel
-MaxPooling2D((inputDepth, inputWidth, inputHeight), kernelSize=(int, int), stride=(int, int), padding=(int, int))
+MaxPooling2D((inputDepth, inputWidth, inputHeight), kernelSize=(int, int), stride=(int, int), padding=((int, int), (int, int)))
 
 # Activation Functions
 Sigmoid()
@@ -175,6 +175,7 @@ network = Network(
 ```
 
 ## Stride and Padding Notation
+> :warning: Striding and Padding were only recently implemented. I cannot confirm that they work in all cases yet. So use at your own risk.
 
 Sometimes you might see notation like **array[x][y]**. However, this is kind of a confusing syntax that people (including myself) write. Do not confuse the arbitrary variable **x** with the width. It does not represent the "x" of a coordinate system; in reality it represents the height. If you view the array syntax from a coordinate perspective it is really **array[height][width]**. So when you are inputting parameters for strides and padding it is really with the syntax **(height, width)**.
 
@@ -205,8 +206,6 @@ This library no longer supports CUDA. It has been removed because it was too har
 ## TODO
 
 - Package And Host The Library
-- Implement More Loss Functions
-- Validate Leaky Relu Activation Function
 - Implement Avg Pooling
 - Implement Adaptive Avg Pooling
 - Implement Batch Normalization

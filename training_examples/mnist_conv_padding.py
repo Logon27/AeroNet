@@ -28,27 +28,31 @@ x_train, y_train = preprocess_data(x_train, y_train, 60000)
 x_test, y_test = preprocess_data(x_test, y_test, 10000)
 
 # Neural Network Layers
-# https://www.kaggle.com/code/cdeotte/how-to-choose-cnn-architecture-mnist/notebook
 layers = [
+    Convolutional((1, 28, 28), 5, 2, padding=((2,2), (2,2))),
     # Input Size = 28
     # Kernel Size = 5
-    # Output Size = (input_size - kernel_size + (2 * padding)) / stride + 1
-    # ((28 - 5) / 2) + 1 = 24
-    Convolutional((1, 28, 28), 5, 2),
-    Relu(),
-    # For the intermediate pooling step
-    # (24 - 2 + (2 * 1)) / 2 + 1 = 13
-    MaxPooling2D((2, 24, 24), kernel_size=(2,2), stride=(2,2), padding=((1,1), (1,1))),
-    Convolutional((2, 13, 13), 5, 2),
-    Relu(),
-    Flatten((2, 9, 9)),
-    Dense(2 * 9 * 9, 10),
+    # Output Size = Input Size - Kernel Size + 1
+    # 28 - 5 + 1 = 24
+    Sigmoid(),
+    Dropout(0.25),
+    Convolutional((2, 28, 28), 3, 2),
+    Sigmoid(),
+    Convolutional((2, 26, 26), 5, 2),
+    Sigmoid(),
+    Convolutional((2, 22, 22), 3, 2),
+    Sigmoid(),
+    # Reshape((2, 20, 20), (2 * 20 * 20, 1)),  # This is an alternative to Flatten
+    Flatten((2, 20, 20)),
+    Dense(2 * 20 * 20, 40),
+    Sigmoid(),
+    Dense(40, 10),
     Softmax()
 ]
 
 #network = loadNetwork("mnist_network_conv.pkl")
 # Setting the layer properties for every layer in the network.
-conv_layer_properties = LayerProperties(learning_rate=0.01, optimizer=SGD(), weight_initializer=Uniform(), bias_initializer=Zero())
+conv_layer_properties = LayerProperties(learning_rate=0.005, optimizer=MomentumSGD(), weight_initializer=Normal(std=0.1), bias_initializer=Zero())
 network = Network(
     layers,
     TrainingSet(x_train, y_train, x_test, y_test, np.argmax),

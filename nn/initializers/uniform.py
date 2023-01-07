@@ -2,5 +2,5 @@ import numpy as np
 from .initializer import Initializer
 
 class Uniform(Initializer):
-    def get(self, *shape):
-        return np.random.uniform(-1, 1, size=shape)
+    def get(self, *shape, low=-1, high=1):
+        return np.random.uniform(low, high, size=shape)
