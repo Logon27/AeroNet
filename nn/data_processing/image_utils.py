@@ -8,21 +8,25 @@ from PIL import Image as im
 # These are all currently optimized for mnist
 
 # Rotation method
-def randomRotateArray(x):
-    x = rotate(x, angle=random.randint(-20, 20), reshape=False)
+def randomRotateArray(x, low_rotate_degrees = -20, high_rotate_degrees = 20):
+    x = rotate(x, angle=random.randint(low_rotate_degrees, high_rotate_degrees), reshape=False)
     return x
 
 # Translation method
-def randomShiftArray(x):
-    x = shift(x, shift=(random.uniform(-3, 3),random.uniform(-3, 3)))
+def randomShiftArray(x, vertical_shift_low = -3, vertical_shift_high = 3, horizontal_shift_low = -3, horizontal_shift_high = 3):
+    x = shift(x, shift=(random.uniform(vertical_shift_low, vertical_shift_high),
+                        random.uniform(horizontal_shift_low, horizontal_shift_high)))
     return x
 
 # https://stackoverflow.com/questions/54633038/how-to-add-masking-noise-to-numpy-2-d-matrix-in-a-vectorized-manner
 # Noise method
-def randomNoiseArray(x):
-    frac = 0.005
-    for i in range(5):
-        randomInt = random.randint(50, 255)
+def randomNoiseArray(x, percentage_noise = 0.5, num_noise_iterations = 5, noise_value_low = 50, noise_value_high = 255):
+    frac = percentage_noise / 100
+    # Each iteration only applies a single noise value multiple times.
+    # So typically you want a really low noise percentage and a higher number of iterations.
+    # That way you get a bunch of unique noise values applied a small number of times.
+    for i in range(num_noise_iterations):
+        randomInt = random.randint(noise_value_low, noise_value_high)
         x[np.random.sample(size=x.shape) < frac] = randomInt
     return x
 
@@ -75,16 +79,16 @@ def randomClippedZoomArray(img, zoom_factor=random.uniform(0.75, 1.4), **kwargs)
     return out
 
 # Used to scale up numpy images for testing
-def scaleImage(npArray, scale_factor: int):
-    return np.repeat(np.repeat(npArray, scale_factor, axis=0), scale_factor, axis=1)
+def scaleImage(np_array, scale_factor: int):
+    return np.repeat(np.repeat(np_array, scale_factor, axis=0), scale_factor, axis=1)
 
 # For debug only. Saves numpy array to file.
 # You might have to multiple the numpy array by 255 if it was normalized
-def saveImage(npArray, fileName: str):
+def saveImage(np_array, file_name: str):
     # Create an image from the array
-    data = im.fromarray(npArray)
+    data = im.fromarray(np_array)
     data = data.convert("L")
     
     # Saving the final output to file
-    data.save(fileName)
-    print("Saved Image... {}".format(fileName))
+    data.save(file_name)
+    print("Saved Image... {}".format(file_name))

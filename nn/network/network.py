@@ -8,9 +8,6 @@ from time import localtime, strftime
 
 class Network():
 
-    # The total training time in minutes.
-    totalTrainingTime = 0
-
     def __init__(self, layers, training_set: TrainingSet, loss, loss_prime, epochs = 1000, batch_size = 1, verbose = True, layer_properties: LayerProperties = None):
         self.layers = layers
         self.training_set = training_set
@@ -19,6 +16,8 @@ class Network():
         self.epochs = epochs
         self.batch_size = batch_size
         self.verbose = verbose
+        # The total training time in minutes.
+        self.total_training_time = 0
 
         # Optionally set the layer properties for all layers that utilize layer properties parameters
         if layer_properties is not None:
@@ -46,7 +45,7 @@ class Network():
             print("Start Date: {}".format(strftime("%Y-%m-%d", localtime())))
             print("Start Time: {}".format(strftime("%I:%M:%S %p", localtime())))
             print("Beginning training...")
-            startTime = time.time()
+            start_time = time.time()
 
         for epoch in range(self.epochs):
 
@@ -77,47 +76,48 @@ class Network():
                     gradient = layer.backward(gradient)
 
             if self.verbose:
-                accuracyTrain, accuracyTest = self.test()
+                accuracy_train, accuracy_test = self.test()
                 #Calculate estimated training time remaining for my sanity
-                endTime = time.time()
-                timeElapsedMins = (endTime - startTime) / 60
-                timePerEpoch = timeElapsedMins / (epoch+1)
-                epochsRemaining = self.epochs - (epoch+1)
-                trainingTimeRemaining = timePerEpoch * epochsRemaining
-                print("{}/{}, Accuracy Train = {:.2%}, Accuracy Test = {:.2%}, Time Remaining = {:.2f} minutes".format((epoch+1), self.epochs, accuracyTrain, accuracyTest, trainingTimeRemaining))
+                end_time = time.time()
+                time_elapsed_mins = (end_time - start_time) / 60
+                time_per_epoch = time_elapsed_mins / (epoch+1)
+                epochs_remaining = self.epochs - (epoch+1)
+                training_time_remaining = time_per_epoch * epochs_remaining
+                print("{}/{}, Accuracy Train = {:.2%}, Accuracy Test = {:.2%}, Time Remaining = {:.2f} minutes".format(
+                    (epoch+1), self.epochs, accuracy_train, accuracy_test, training_time_remaining))
         
-        endTime = time.time()
-        timeElapsedMins = (endTime - startTime) / 60
-        self.totalTrainingTime += timeElapsedMins
+        end_time = time.time()
+        time_elapsed_mins = (end_time - start_time) / 60
+        self.total_training_time += time_elapsed_mins
 
         if self.verbose:
-            print("Training Complete. Elapsed Time = {:.2f} seconds. Or {:.2f} minutes.".format(endTime - startTime, timeElapsedMins))
+            print("Training Complete. Elapsed Time = {:.2f} seconds. Or {:.2f} minutes.".format(end_time - start_time, time_elapsed_mins))
 
     # Returns the accuracy against the training and test datasets
     def test(self):
         # Training Accuracy
-        numCorrect = 0
-        numIncorrect = 0
+        num_correct = 0
+        num_incorrect = 0
         for input_train_sample, output_train_sample in zip(self.training_set.input_train, self.training_set.output_train):
             prediction = self.predict(input_train_sample)
             if self.training_set.post_processing(prediction) == self.training_set.post_processing(output_train_sample):
-                numCorrect += 1
+                num_correct += 1
             else:
-                numIncorrect += 1
-        accuracyTrain = numCorrect / (numCorrect + numIncorrect)
+                num_incorrect += 1
+        accuracy_train = num_correct / (num_correct + num_incorrect)
 
         # Test Accuracy
-        numCorrect = 0
-        numIncorrect = 0
+        num_correct = 0
+        num_incorrect = 0
         for input_train_sample, output_train_sample in zip(self.training_set.input_test, self.training_set.output_test):
             prediction = self.predict(input_train_sample)
             if self.training_set.post_processing(prediction) == self.training_set.post_processing(output_train_sample):
-                numCorrect += 1
+                num_correct += 1
             else:
-                numIncorrect += 1
-        accuracyTest = numCorrect / (numCorrect + numIncorrect)
+                num_incorrect += 1
+        accuracy_test = num_correct / (num_correct + num_incorrect)
 
-        return accuracyTrain, accuracyTest
+        return accuracy_train, accuracy_test
     
     # Source: https://stackoverflow.com/questions/38157972/how-to-implement-mini-batch-gradient-descent-in-python
     # You should ideally shuffle the data. Take XOR for example if you have a batch size of 2.

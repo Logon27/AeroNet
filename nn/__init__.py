@@ -33,11 +33,11 @@ from .optimizers.momentum_sgd import MomentumSGD
 
 # Loss Functions
 # Mean Squared Error
-from .losses.mse import mse, mse_prime
+from .losses.mean_squared_error import mean_squared_error, mean_squared_error_prime
 # Binary Cross Entropy
-from .losses.bce import binary_cross_entropy, binary_cross_entropy_prime
+from .losses.binary_cross_entropy import binary_cross_entropy, binary_cross_entropy_prime
 # Categorical Cross Entropy
-from .losses.cce import categorical_cross_entropy, categorical_cross_entropy_prime
+from .losses.categorical_cross_entropy import categorical_cross_entropy, categorical_cross_entropy_prime
 
 # Network File I/O
 from .data_processing.file_io import saveNetwork, loadNetwork
