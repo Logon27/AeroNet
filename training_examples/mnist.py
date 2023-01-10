@@ -41,8 +41,8 @@ layers = [
 network = Network(
     layers,
     TrainingSet(x_train, y_train, x_test, y_test, np.argmax),
-    loss=mse,
-    loss_prime=mse_prime,
+    loss=mean_squared_error,
+    loss_prime=mean_squared_error_prime,
     epochs=10,
     batch_size=1,
     layer_properties=LayerProperties(learning_rate=0.01, optimizer=SGD())

@@ -22,8 +22,8 @@ layers = [
 network = Network(
     layers,
     TrainingSet(X, Y, X, Y, np.rint),
-    loss=mse,
-    loss_prime=mse_prime,
+    loss=mean_squared_error,
+    loss_prime=mean_squared_error_prime,
     epochs=1000,
     batch_size=1,
     layer_properties=LayerProperties(learning_rate=0.03)
