@@ -35,7 +35,6 @@ python mnist_conv.py
 python mnist_fcn.py
 
 # Convolutional neural network implementation for mnist with max pooling
-# Max pooling still needs some optimization so it runs a bit slow currently
 python mnist_maxpooling.py
 ```
 ---
@@ -97,13 +96,13 @@ post_processing is a function applied to your network prediction and training se
 ## Supported Neural Layers
 
 ```python
-Dense(numInputNeurons, numOutputNeurons) # For weight manipulation
-Convolutional((inputDepth, inputWidth, inputHeight), kernelSize, numKernels, stride=(int, int), padding=((int, int), (int, int)))
+# Layers
+Dense(num_input_neurons, num_output_neurons) # For weight manipulation
+Convolutional((input_depth, input_height, input_width), kernel_size, num_kernels, stride=(int, int), padding=((int, int), (int, int)))
 Reshape() # Modifies the shape of the numpy arrays passed between layers
 Flatten() # Flattens a numpy array into a 2D matrix with a single column
-Dropout(probability) # Randomly drops layer outputs based on a probability to prevent overfitting
-# Max pooling kernel size currently only takes an integer to make a square kernel
-MaxPooling2D((inputDepth, inputWidth, inputHeight), kernelSize=(int, int), stride=(int, int), padding=((int, int), (int, int)))
+Dropout(probability) # Randomly drops layer outputs based on a probability to prevent overfitting. A probability of 0.25 would drop 25% of connections.
+MaxPooling2D((input_depth, input_height, input_width), kernel_size, stride=(int, int), padding=((int, int), (int, int)))
 
 # Activation Functions
 Sigmoid()
@@ -174,30 +173,45 @@ network = Network(
 )
 ```
 
-## Stride and Padding Notation
+## Kernel, Stride, and Padding Notation
 > :warning: Striding and Padding were only recently implemented. I cannot confirm that they work in all cases yet. So use at your own risk.
 
 Sometimes you might see notation like **array[x][y]**. However, this is kind of a confusing syntax that people (including myself) write. Do not confuse the arbitrary variable **x** with the width. It does not represent the "x" of a coordinate system; in reality it represents the height. If you view the array syntax from a coordinate perspective it is really **array[height][width]**. So when you are inputting parameters for strides and padding it is really with the syntax **(height, width)**.
 
+### Kernel
+
+The kernel supports 3 different syntax listed below. 
+
+```
+kernel_size = 3         # Uses 3 for the height and width
+kernel_size = (3)       # Uses 3 for the height and width
+kernel_size = (3,3)
+```
+
 ### Striding
 
-Striding only has two dimensions, that is striding in the "height" dimension and striding in the "width" dimension. Striding follows the syntax **(height_stride, width_stride)**. So a stride of (2,3) would move the kernel 2 positions to the right or 3 positions down.
+Striding only has two dimensions, that is striding in the "height" dimension and striding in the "width" dimension. Striding follows the syntax **(height_stride, width_stride)**. So a stride of (2,3) would move the kernel 2 positions to the right or 3 positions down. Syntax example listed below.
+
+```
+stride = (3, 3)
+```
 
 ### Padding
 
-There are two different allowed padding formats.
+There are four different allowed padding formats.
 
 **(pad_all_4_sides)**  
-```padding = (0)```
+```padding = 1```
 or...
-```padding = 0```
+```padding = (1)```
 
-**((top_height_pad,bottom_height_pad), (left_width_pad,right_width_pad))**  
+**(pad_height, pad_width)**  
+```padding = (1, 1)```
+
+**((pad_top_height,pad_bottom_height), (pad_left_width,pad_right_width))**  
 Alternatively you could think of the format as...  
 **((top, bottom), (left, right))**  
 ```padding = ((1,1), (2,2))```
-
-The syntax (1,2) **IS NOT SUPPORTED**.
 
 ## CUDA Support
 

@@ -48,7 +48,7 @@ layers = [
 
 #network = loadNetwork("mnist_network_conv.pkl")
 # Setting the layer properties for every layer in the network.
-conv_layer_properties = LayerProperties(learning_rate=0.01, optimizer=MomentumSGD(), weight_initializer=Normal(), bias_initializer=Zero())
+conv_layer_properties = LayerProperties(learning_rate=0.005, optimizer=MomentumSGD(), weight_initializer=Normal(std=0.1), bias_initializer=Zero())
 network = Network(
     layers,
     TrainingSet(x_train, y_train, x_test, y_test, np.argmax),
