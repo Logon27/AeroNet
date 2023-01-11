@@ -42,8 +42,8 @@ layers = [
     Convolutional((2, 22, 22), 3, 2, bias_mode='tied'),
     Sigmoid(),
     Convolutional((2, 20, 20), 20, 10, bias_mode='tied'),
-    # The flatten is only necessary because the convolutional layer implementation uses 2d convolution functions.
-    # So it can't backprop to 3d properly without a flatten layer.
+    # The flatten is only necessary because the Softmax layer takes 1D input.
+    # So it can't forward prop or backprop to 3D properly without a flatten layer.
     Flatten((10, 1, 1)),
     Softmax()
 ]

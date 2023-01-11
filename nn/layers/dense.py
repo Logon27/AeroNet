@@ -11,16 +11,8 @@ class Dense(Layer):
         # Default layer properties
         self.layer_properties = LayerProperties(learning_rate=0.05, weight_initializer=Uniform(), bias_initializer=Uniform(), optimizer=SGD())
 
-        # Optionally set the layer properties for all layers that utilize layer properties parameters
-        if layer_properties is not None:
-            # Replace all layer defaults with any non "None" layer properties.
-            # This is just a lot of fancy code to allow you to override only 'some' of the default layer properties.
-            # Instead of forcing you to populate all the parameters every time.
-            for attr, _ in layer_properties.__dict__.items():
-                if getattr(layer_properties, attr) is not None:
-                    # copy is necessary to ensure that individual layer classes don't get shared instances of an optimizer
-                    # optimizers such as momentum sgd require separate instances to track velocity
-                    setattr(self.layer_properties, attr, deepcopy(getattr(layer_properties, attr)))
+        # Parse and update any optional layer properties
+        self.parse_layer_properties(layer_properties)
 
         self.weights = self.layer_properties.weight_initializer.get(output_shape, input_shape)
         self.bias = self.layer_properties.weight_initializer.get(output_shape, 1)
@@ -36,6 +28,18 @@ class Dense(Layer):
         self.bias += self.layer_properties.bias_optimizer.calc(self.layer_properties.learning_rate, output_gradient)
         return input_gradient
     
+    def parse_layer_properties(self, layer_properties):
+        # Optionally set the layer properties for all layers that utilize layer properties parameters
+        if layer_properties is not None:
+            # Replace all layer defaults with any non "None" layer properties.
+            # This is just a lot of fancy code to allow you to override only 'some' of the default layer properties.
+            # Instead of forcing you to populate all the parameters every time.
+            for attr, _ in layer_properties.__dict__.items():
+                if getattr(layer_properties, attr) is not None:
+                    # copy is necessary to ensure that individual layer classes don't get shared instances of an optimizer
+                    # optimizers such as momentum sgd require separate instances to track velocity
+                    setattr(self.layer_properties, attr, deepcopy(getattr(layer_properties, attr)))
+
     # Modify string representation for network architecture printing
     def __str__(self):
         return self.__class__.__name__ + "({}, {})".format(self.weights.shape[1], self.weights.shape[0])
