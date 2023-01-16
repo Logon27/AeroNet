@@ -48,7 +48,7 @@ network = Network(
     layer_properties=LayerProperties(learning_rate=0.01, optimizer=SGD())
 )
 network.train()
-saveNetwork(network, "mnist_network.pkl")
+save_network(network, "mnist_network.pkl")
 
 # Visual Debug After Training
 rows = 5

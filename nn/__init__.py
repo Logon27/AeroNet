@@ -40,4 +40,4 @@ from .losses.binary_cross_entropy import binary_cross_entropy, binary_cross_entr
 from .losses.categorical_cross_entropy import categorical_cross_entropy, categorical_cross_entropy_prime
 
 # Network File I/O
-from .data_processing.file_io import saveNetwork, loadNetwork
+from .data_processing.file_io import save_network, load_network

@@ -58,7 +58,7 @@ network = Network(
     layer_properties=conv_layer_properties
 )
 network.train()
-saveNetwork(network, "mnist_network_conv.pkl")
+save_network(network, "mnist_network_conv.pkl")
 
 # Visual Debug After Training
 rows = 5

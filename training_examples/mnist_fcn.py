@@ -57,7 +57,7 @@ network = Network(
     epochs=5
 )
 network.train()
-saveNetwork(network, "mnist_network_fcn.pkl")
+save_network(network, "mnist_network_fcn.pkl")
 
 # Visual Debug After Training
 rows = 5

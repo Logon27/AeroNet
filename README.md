@@ -2,9 +2,19 @@
 
 AeroNet is a simple neural network library. It is written entirely using python, numpy, and scipy. This is an educational neural network library made with the hope of demystifying some of these modern deep learning libraries. Many modern deep learning libraries do not fundamentally differ from AeroNet all that much (minus automatic differentiation). Most of the code in modern libraries is just dedicated to efficiency and optimization of the algorithms used. Feel free to play around with AeroNet and see what deep learning projects you can make.
 
-## Creating A Virtual Environment
+## Installing AeroNet
 
-Python 3.10 is recommended for using this neural network library
+AeroNet is now hosted on PyPi for your convenience. The only dependencies are numpy, scipy, and dill which are all installed automatically when AeroNet is installed. Python 3.10 is recommended for using AeroNet.
+
+```bash
+pip install aeronet-learn
+```
+
+## Running From The Source Code
+
+### Creating A Virtual Environment
+
+You may want to run AeroNet directly from the source code. Or maybe you want to directly run the training examples hosted on github. This can be done by cloning the code from [github](https://github.com/Logon27/AeroNet). You can then create a virtual enviroment with the following code.
 
 ```
 python -m venv venvNeuralNetworkLibrary
@@ -12,7 +22,9 @@ venvNeuralNetworkLibrary/scripts/activate.bat
 pip install -r requirements.txt
 ```
 
-## Testing Out A Network
+You will then be able to run training examples directly. As seen in the next section.
+
+### Testing Out A Network
 
 Test your network against one of these datasets...
 ```bash
@@ -72,10 +84,10 @@ network.train()
 prediction_array = network.predict(input_array)
 
 # Save the network to a file
-saveNetwork(network, "mnist_network.pkl")
+saveNetwork(network, "network_filename.pkl")
 
 # Load the network from a file
-network = loadNetwork("mnist_network.pkl")
+network = loadNetwork("network_filename.pkl")
 ```
 
 ## TrainingSet Explained
