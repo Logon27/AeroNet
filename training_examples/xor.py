@@ -30,7 +30,7 @@ network = Network(
 )
 # Train The Network
 network.train()
-saveNetwork(network, "xor_network.pkl")
+save_network(network, "xor_network.pkl")
 
 # Decision Boundary 3D Plot
 points = []
