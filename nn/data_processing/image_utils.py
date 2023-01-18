@@ -8,19 +8,19 @@ from PIL import Image as im
 # These are all currently optimized for mnist
 
 # Rotation method
-def randomRotateArray(x, low_rotate_degrees = -20, high_rotate_degrees = 20):
+def random_rotate_array(x, low_rotate_degrees = -20, high_rotate_degrees = 20):
     x = rotate(x, angle=random.randint(low_rotate_degrees, high_rotate_degrees), reshape=False)
     return x
 
 # Translation method
-def randomShiftArray(x, vertical_shift_low = -3, vertical_shift_high = 3, horizontal_shift_low = -3, horizontal_shift_high = 3):
+def random_shift_array(x, vertical_shift_low = -3, vertical_shift_high = 3, horizontal_shift_low = -3, horizontal_shift_high = 3):
     x = shift(x, shift=(random.uniform(vertical_shift_low, vertical_shift_high),
                         random.uniform(horizontal_shift_low, horizontal_shift_high)))
     return x
 
 # https://stackoverflow.com/questions/54633038/how-to-add-masking-noise-to-numpy-2-d-matrix-in-a-vectorized-manner
 # Noise method
-def randomNoiseArray(x, percentage_noise = 0.5, num_noise_iterations = 5, noise_value_low = 50, noise_value_high = 255):
+def random_noise_array(x, percentage_noise = 0.5, num_noise_iterations = 5, noise_value_low = 50, noise_value_high = 255):
     frac = percentage_noise / 100
     # Each iteration only applies a single noise value multiple times.
     # So typically you want a really low noise percentage and a higher number of iterations.
@@ -34,7 +34,7 @@ def randomNoiseArray(x, percentage_noise = 0.5, num_noise_iterations = 5, noise_
 # https://stackoverflow.com/questions/37119071/scipy-rotate-and-zoom-an-image-without-changing-its-dimensions
 # Scaling method
 # Was 0.75, 1.25
-def randomClippedZoomArray(img, zoom_factor=random.uniform(0.75, 1.4), **kwargs):
+def random_clipped_zoom_array(img, zoom_factor=random.uniform(0.75, 1.4), **kwargs):
 
     h, w = img.shape[:2]
 
