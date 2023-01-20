@@ -8,13 +8,14 @@ from time import localtime, strftime
 
 class Network():
 
-    def __init__(self, layers, training_set: TrainingSet, loss, loss_prime, epochs = 1000, batch_size = 1, verbose = True, layer_properties: LayerProperties = None):
+    def __init__(self, layers, training_set: TrainingSet, loss, loss_prime, epochs = 1000, batch_size = 1, layer_properties: LayerProperties = None, data_augmentation = None, verbose = True):
         self.layers = layers
         self.training_set = training_set
         self.loss = loss
         self.loss_prime = loss_prime
         self.epochs = epochs
         self.batch_size = batch_size
+        self.data_augmentation = data_augmentation
         self.verbose = verbose
         # The total training time in minutes.
         self.total_training_time = 0
@@ -58,15 +59,21 @@ class Network():
                 # Unpack batch training data
                 input_train_batch, output_train_batch = batch
                 # Track all gradients for the batch within a list
-                gradients = []
+                # Using numpy empty over zeros for marginal performance
+                gradients = np.empty(output_train_batch.shape)
 
                 # Calculate the gradient for all training samples in the batch
-                for input_train_sample, output_train_sample in zip(input_train_batch, output_train_batch):
+                for sample_index, (input_train_sample, output_train_sample) in enumerate(zip(input_train_batch, output_train_batch)):
+                    # Augment data while training if functions were provided
+                    if self.data_augmentation is not None:
+                        for func in self.data_augmentation:
+                            input_train_sample = func(input_train_sample)
+
                     # Forward Propagation
                     prediction = self.predict(input_train_sample)
 
                     # Calculate Gradient
-                    gradients.append(self.loss_prime(output_train_sample, prediction))
+                    gradients[sample_index] = self.loss_prime(output_train_sample, prediction)
                     
                 # Average all the gradients calculated in the batch
                 gradient = np.mean(gradients, axis=0)

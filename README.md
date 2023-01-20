@@ -51,7 +51,7 @@ python mnist_maxpooling.py
 ```
 ---
 
-## Network Class Usage
+## AeroNet Example Usage
 
 ```python
 # Import all neural network classes.
@@ -134,13 +134,30 @@ MomentumSGD() # Stochastic Gradient Descent with Momentum
 ## Supported Initializers
 
 ```python
-Uniform() # Uniform between -1 and 1 only (at the moment)
+Uniform(low=-1, high=1)
 Normal(mean=0, std=1)
 Zero() # Zero initialized array for biases
 Xavier()
 ```
 
-### Layer Properties
+## The Network Class
+
+```
+network = Network(
+    layers,
+    TrainingSet(x_train, y_train, x_test, y_test, post_processing),
+    loss=loss_function,
+    loss_prime=loss_function_prime,
+    epochs=10,
+    batch_size=1,
+    layer_properties=LayerProperties(learning_rate, weight_initializer, bias_initializer, optimizer),
+    data_augmentation=[function1, function2, function3],
+    verbose=true
+)
+```
+The data_augmentation parameter is a list of pure functions. These functions must take in a single numpy array and return a numpy array. To use functions that take multiple parameters you can pass in a lambda function that calls the multi-parameter function. It can be used for numpy array rotation, scaling, noise, and translation for datasets like mnist (that are uniform and centered). These functions are applied sequentially to every training sample, for every epoch, before they are passed into the network. If no data_augmentation list is supplied then no data_augmentation is performed. You can always choose to augment the dataset before network training begins.
+
+## Layer Properties
 Learning rates can be set at both a network level (every layer) or at individual layers themselves. This is done through the use of a layer properties class. Each layer with trainable parameters has a default learning rate, weight / bias initializer, and optimizer. So even if you input no layer properties for the layer (or network) it will be populated with some defaults. 
 
 ```python
