@@ -41,12 +41,12 @@ class Network():
         return output
 
     def train(self):
+        start_time = time.time()
         if self.verbose:
             self.printNetworkInfo()
             print("Start Date: {}".format(strftime("%Y-%m-%d", localtime())))
             print("Start Time: {}".format(strftime("%I:%M:%S %p", localtime())))
             print("Beginning training...")
-            start_time = time.time()
 
         for epoch in range(self.epochs):
 
