@@ -84,10 +84,10 @@ network.train()
 prediction_array = network.predict(input_array)
 
 # Save the network to a file
-saveNetwork(network, "network_filename.pkl")
+save_network(network, "network_filename.pkl")
 
 # Load the network from a file
-network = loadNetwork("network_filename.pkl")
+network = load_network("network_filename.pkl")
 ```
 
 ## TrainingSet Explained
