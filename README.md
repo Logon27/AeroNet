@@ -219,7 +219,7 @@ kernel_size = (3,3)
 
 ### Striding
 
-Striding only has two dimensions, that is striding in the "height" dimension and striding in the "width" dimension. Striding follows the syntax **(height_stride, width_stride)**. So a stride of (2,3) would move the kernel 2 positions to the right or 3 positions down. Syntax example listed below.
+Striding only has two dimensions, that is striding in the "height" dimension and striding in the "width" dimension. Striding follows the syntax **(height_stride, width_stride)**. So a stride of (2, 3) would move the kernel 2 positions down and 3 positions to the right. Syntax example listed below.
 
 ```
 stride = (3, 3)
