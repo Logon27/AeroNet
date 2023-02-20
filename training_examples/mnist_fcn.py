@@ -48,7 +48,7 @@ layers = [
     Softmax()
 ]
 
-#network = loadNetwork("mnist_network_fcn.pkl")
+#network = load_network("mnist_network_fcn.pkl")
 network = Network(
     layers,
     TrainingSet(x_train, y_train, x_test, y_test, np.argmax),

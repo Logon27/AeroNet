@@ -46,7 +46,7 @@ layers = [
     Softmax()
 ]
 
-#network = loadNetwork("mnist_network_conv.pkl")
+#network = load_network("mnist_network_conv.pkl")
 # Setting the layer properties for every layer in the network.
 conv_layer_properties = LayerProperties(learning_rate=0.005, optimizer=MomentumSGD(), weight_initializer=Normal(std=0.1), bias_initializer=Zero())
 network = Network(
