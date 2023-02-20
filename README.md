@@ -152,10 +152,23 @@ network = Network(
     batch_size=1,
     layer_properties=LayerProperties(learning_rate, weight_initializer, bias_initializer, optimizer),
     data_augmentation=[function1, function2, function3],
+    percent_error_threshold=None
     verbose=true
 )
 ```
+
 The data_augmentation parameter is a list of pure functions. These functions must take in a single numpy array and return a numpy array. To use functions that take multiple parameters you can pass in a lambda function that calls the multi-parameter function. It can be used for numpy array rotation, scaling, noise, and translation for datasets like mnist (that are uniform and centered). These functions are applied sequentially to every training sample, for every epoch, before they are passed into the network. If no data_augmentation list is supplied then no data_augmentation is performed. You can always choose to augment the dataset before network training begins.
+
+The percent_error_threshold parameters on the network class can be used to stop training when the network reaches a certain error percentage. For example, if you passed ```percent_error_threshold = 0.05``` then the network would exit the training loop if the error percentage fell below 5%. This can be used to prevent overtraining or shorten training time if you are only aiming to get below a certain error rate.
+
+### Network Metadata
+
+The network class does track some metadata to help with debugging or generate training statistics.
+
+- total_training_time (float).  
+The total training time for the network in minutes.
+- per_epoch_errors (list of floats)  
+A list of the errors per epoch. This is only for the last time the train() method was called.
 
 ## Layer Properties
 Learning rates can be set at both a network level (every layer) or at individual layers themselves. This is done through the use of a layer properties class. Each layer with trainable parameters has a default learning rate, weight / bias initializer, and optimizer. So even if you input no layer properties for the layer (or network) it will be populated with some defaults. 

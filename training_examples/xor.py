@@ -18,7 +18,7 @@ layers = [
     Tanh()
 ]
 
-#network = loadNetwork("xor_network.pkl")
+#network = load_network("xor_network.pkl")
 network = Network(
     layers,
     TrainingSet(X, Y, X, Y, np.rint),

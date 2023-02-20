@@ -37,7 +37,7 @@ layers = [
     Dense(35, 10),
     Softmax()
 ]
-# network = loadNetwork("mnist_network.pkl")
+# network = load_network("mnist_network.pkl")
 network = Network(
     layers,
     TrainingSet(x_train, y_train, x_test, y_test, np.argmax),

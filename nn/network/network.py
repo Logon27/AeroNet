@@ -8,7 +8,19 @@ from time import localtime, strftime
 
 class Network():
 
-    def __init__(self, layers, training_set: TrainingSet, loss, loss_prime, epochs = 1000, batch_size = 1, layer_properties: LayerProperties = None, data_augmentation = None, verbose = True):
+    def __init__(
+        self,
+        layers,
+        training_set: TrainingSet,
+        loss,
+        loss_prime,
+        epochs = 1000,
+        batch_size = 1,
+        layer_properties: LayerProperties = None,
+        data_augmentation = None,
+        percent_error_threshold = None,
+        verbose = True
+    ) -> None:
         self.layers = layers
         self.training_set = training_set
         self.loss = loss
@@ -16,9 +28,12 @@ class Network():
         self.epochs = epochs
         self.batch_size = batch_size
         self.data_augmentation = data_augmentation
+        self.percent_error_threshold = percent_error_threshold
         self.verbose = verbose
         # The total training time in minutes.
         self.total_training_time = 0
+        # Per epoch errors. This can be used for debugging or visualization.
+        self.per_epoch_errors = []
 
         # Optionally set the layer properties for all layers that utilize layer properties parameters
         if layer_properties is not None:
@@ -41,9 +56,12 @@ class Network():
         return output
 
     def train(self):
+        # Reset start time and clear per epoch errors list
         start_time = time.time()
+        self.per_epoch_errors.clear()
+        
         if self.verbose:
-            self.printNetworkInfo()
+            self.print_network_info()
             print("Start Date: {}".format(strftime("%Y-%m-%d", localtime())))
             print("Start Time: {}".format(strftime("%I:%M:%S %p", localtime())))
             print("Beginning training...")
@@ -82,17 +100,21 @@ class Network():
                 for layer in reversed(self.layers):
                     gradient = layer.backward(gradient)
 
+            # Calculate error statistics
+            accuracy_train, accuracy_test = self.test()
+            test_error_percentage = 1 - accuracy_test
+            self.per_epoch_errors.append(test_error_percentage)
+
             if self.verbose:
-                accuracy_train, accuracy_test = self.test()
-                #Calculate estimated training time remaining for my sanity
-                end_time = time.time()
-                time_elapsed_mins = (end_time - start_time) / 60
-                time_per_epoch = time_elapsed_mins / (epoch+1)
-                epochs_remaining = self.epochs - (epoch+1)
-                training_time_remaining = time_per_epoch * epochs_remaining
-                print("{}/{}, Accuracy Train = {:.2%}, Accuracy Test = {:.2%}, Time Remaining = {:.2f} minutes".format(
-                    (epoch+1), self.epochs, accuracy_train, accuracy_test, training_time_remaining))
+                self.print_per_epoch_info(start_time, epoch, accuracy_train, accuracy_test)
+
+            # If the error on the test set is less than the error threshold defined then we stop training.
+            if self.percent_error_threshold is not None and test_error_percentage < self.percent_error_threshold:
+                print("Error threshold {:.2f} has been reached.".format(self.percent_error_threshold))
+                # Break out of the training loop
+                break
         
+        # Calculate total training time in minutes.
         end_time = time.time()
         time_elapsed_mins = (end_time - start_time) / 60
         self.total_training_time += time_elapsed_mins
@@ -124,6 +146,7 @@ class Network():
                 num_incorrect += 1
         accuracy_test = num_correct / (num_correct + num_incorrect)
 
+        # Returns decimal format accuracy. i.e. 0.75 is 75%
         return accuracy_train, accuracy_test
     
     # Source: https://stackoverflow.com/questions/38157972/how-to-implement-mini-batch-gradient-descent-in-python
@@ -143,7 +166,7 @@ class Network():
                 excerpt = slice(start_idx, end_idx)
             yield inputs[excerpt], targets[excerpt]
 
-    def printNetworkInfo(self):
+    def print_network_info(self):
 
         print("===== Network Information =====")
         print("Network Architecture:")
@@ -163,3 +186,13 @@ class Network():
         print("{:<15} {}".format("Batch Size:", str(self.batch_size)))
         print("{:<15} {}".format("Verbose:", self.verbose))
         print("\n===== End Network Information =====\n")
+    
+    def print_per_epoch_info(self, start_time, epoch, accuracy_train, accuracy_test):
+        # Calculate estimated training time remaining for my sanity
+        end_time = time.time()
+        time_elapsed_mins = (end_time - start_time) / 60
+        time_per_epoch = time_elapsed_mins / (epoch + 1)
+        epochs_remaining = self.epochs - (epoch + 1)
+        training_time_remaining = time_per_epoch * epochs_remaining
+        print("{}/{}, Accuracy Train = {:.2%}, Accuracy Test = {:.2%}, Time Remaining = {:.2f} minutes".format(
+            (epoch+1), self.epochs, accuracy_train, accuracy_test, training_time_remaining))

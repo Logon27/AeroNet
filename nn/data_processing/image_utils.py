@@ -79,12 +79,12 @@ def random_clipped_zoom_array(img, zoom_factor=random.uniform(0.75, 1.4), **kwar
     return out
 
 # Used to scale up numpy images for testing
-def scaleImage(np_array, scale_factor: int):
+def scale_image(np_array, scale_factor: int):
     return np.repeat(np.repeat(np_array, scale_factor, axis=0), scale_factor, axis=1)
 
 # For debug only. Saves numpy array to file.
 # You might have to multiple the numpy array by 255 if it was normalized
-def saveImage(np_array, file_name: str):
+def save_image(np_array, file_name: str):
     # Create an image from the array
     data = im.fromarray(np_array)
     data = data.convert("L")
